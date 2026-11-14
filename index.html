@@ -3,7 +3,1954 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang <!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head><!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Bio Cá Nhân</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tải Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Thư viện tạo mã QR (qrcode.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Dữ liệu Bio ban đầu - Sẽ được cập nhật tự động khi bạn bấm Xuất Tệp -->
+    <script id="bioDataScript">
+        window.INITIAL_BIO_DATA = {
+            "profile": {
+                "name": "Đường Văn Tùng",
+                "role": "Trang Bio Cá Nhân",
+                "bio": "Chào mừng bạn ghé thăm trang Bio của mình! Kết nối với mình qua các liên kết bên dưới.",
+                "avatar": "https://placehold.co/300x300/4F46E5/FFFFFF?text=AVATAR",
+                "phone": "0336932590",
+                "email": "vantung@example.com"
+            },
+            "links": [
+                {
+                    "title": "Facebook Cá Nhân",
+                    "url": "https://facebook.com",
+                    "icon": "facebook",
+                    "subtitle": "@vantung"
+                },
+                {
+                    "title": "Nhắn Tin Zalo",
+                    "url": "https://zalo.me/0336932590",
+                    "icon": "message-circle",
+                    "subtitle": "0336932590"
+                },
+                {
+                    "title": "Kênh TikTok",
+                    "url": "https://tiktok.com",
+                    "icon": "video",
+                    "subtitle": "@vantung.tiktok"
+                },
+                {
+                    "title": "Trang Web Chính Thức",
+                    "url": "https://example.com",
+                    "icon": "globe",
+                    "subtitle": "example.com"
+                }
+            ],
+            "messages": []
+        };
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white transition-colors duration-300">
+
+    <!-- Thanh công cụ Admin / Khách (Được ẩn mặc định với khách, chỉ hiện khi đăng nhập Admin) -->
+    <div id="adminToolbar" class="hidden bg-brand-600 text-white text-xs sm:text-sm py-2 px-4 shadow-md sticky top-0 z-40">
+        <div class="max-w-2xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="font-semibold">Đang ở chế độ Quản trị viên (Admin)</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="openEditProfileModal()" class="px-3 py-1 rounded-lg bg-white/15 hover:bg-white/25 transition font-medium">Sửa Hồ Sơ</button>
+                <button onclick="openAddLinkModal()" class="px-3 py-1 rounded-lg bg-white/15 hover:bg-white/25 transition font-medium">Thêm Liên Kết</button>
+                <button onclick="openMessagesModal()" class="px-3 py-1 rounded-lg bg-white/15 hover:bg-white/25 transition font-medium relative">
+                    Lời Nhắn (<span id="msgCountBadge">0</span>)
+                </button>
+                <button onclick="exportReadyHTML()" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 transition font-semibold shadow-xs">Xuất Tệp index.html</button>
+                <button onclick="logoutAdmin()" class="px-2 py-1 rounded-lg hover:bg-red-500/50 transition" title="Thoát Admin">✕</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thanh định hướng nhỏ phía trên -->
+    <header class="w-full max-w-2xl mx-auto px-4 pt-6 flex justify-between items-center">
+        <button onclick="toggleTheme()" class="p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs hover:scale-105 transition" title="Đổi giao diện Sáng/Tối">
+            <svg id="themeIcon" class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        </button>
+        <button onclick="openQRModal()" class="px-4 py-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs text-xs font-semibold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+            <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+            <span>Mã QR Danh Thiếp</span>
+        </button>
+    </header>
+
+    <!-- Phần Nội Dung Chính (Bio Card) -->
+    <main class="w-full max-w-2xl mx-auto px-4 py-8 flex-1 flex flex-col items-center">
+        
+        <!-- Khung Hồ Sơ Cá Nhân -->
+        <div class="w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xl p-6 sm:p-8 text-center relative overflow-hidden transition-all">
+            
+            <!-- Ảnh Đại Diện (Nhấp đúp vào Avatar để mở nhanh đăng nhập Admin) -->
+            <div class="relative w-32 h-32 mx-auto mb-5 group cursor-pointer" ondblclick="openAdminLoginModal()" title="Nhấp đúp để đăng nhập Admin">
+                <img id="displayAvatar" src="" alt="Avatar" class="w-full h-full rounded-full object-cover shadow-md border-4 border-white dark:border-slate-800 group-hover:opacity-95 transition">
+                <div class="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 flex items-center justify-center" title="Đang hoạt động"></div>
+            </div>
+
+            <!-- Tên & Chức danh -->
+            <div class="flex items-center justify-center gap-2 mb-1">
+                <h1 id="displayName" class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white"></h1>
+                <!-- Huy hiệu xác thực xanh -->
+                <svg class="w-6 h-6 text-sky-500 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <p id="displayRole" class="text-sm font-medium text-brand-600 dark:text-brand-400 mb-4"></p>
+
+            <!-- Giới thiệu ngắn -->
+            <p id="displayBio" class="text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto leading-relaxed mb-6"></p>
+
+            <!-- Nút liên hệ nhanh (Gọi & Sao chép SĐT) -->
+            <div class="grid grid-cols-2 gap-3 max-w-md mx-auto">
+                <a id="quickCallBtn" href="#" class="py-3 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                    <span>Gọi Ngay</span>
+                </a>
+                <button onclick="copyPhone()" class="py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                    <span>Sao Chép SĐT</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tiêu đề danh sách mạng xã hội -->
+        <div class="w-full flex items-center justify-between mt-8 mb-4 px-2">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kết Nối Trực Tuyến</h2>
+            <button id="addLinkBtnMobile" onclick="openAddLinkModal()" class="hidden text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline">+ Thêm liên kết</button>
+        </div>
+
+        <!-- Danh sách các nút Mạng Xã Hội -->
+        <div id="linksContainer" class="w-full space-y-3.5">
+            <!-- Được render động bằng JavaScript -->
+        </div>
+
+        <!-- Khung Gửi Lời Nhắn Trực Tiếp Cho Chủ Nhân -->
+        <div class="w-full mt-10 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-lg p-6 sm:p-8">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Gửi Lời Nhắn Trực Tiếp</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Để lại lời nhắn hoặc yêu cầu hợp tác, mình sẽ phản hồi sớm nhất.</p>
+            
+            <form id="contactForm" onsubmit="handleSendMessage(event)" class="mt-5 space-y-4">
+                <div>
+                    <input type="text" id="msgName" required placeholder="Họ tên của bạn" class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <input type="text" id="msgContact" required placeholder="Số điện thoại hoặc Email liên hệ" class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <textarea id="msgContent" rows="3" required placeholder="Nội dung lời nhắn..." class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 text-white font-semibold text-sm transition shadow-sm">
+                    Gửi Lời Nhắn
+                </button>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- Chân trang (Footer) -->
+    <footer class="w-full max-w-2xl mx-auto px-4 py-6 text-center text-xs text-slate-400 dark:text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-200 dark:border-slate-800/60 mt-12">
+        <p>© <span id="currentYear">2026</span> <span id="footerName">Đường Văn Tùng</span>. All rights reserved.</p>
+        <!-- Nút mở khóa Admin kín đáo ở góc chân trang -->
+        <button onclick="openAdminLoginModal()" class="flex items-center gap-1.5 opacity-60 hover:opacity-100 transition text-slate-500 dark:text-slate-400">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <span>Quản Trị Viên</span>
+        </button>
+    </footer>
+
+    <!-- MODAL ĐĂNG NHẬP ADMIN -->
+    <div id="adminLoginModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="text-base font-bold">Đăng Nhập Quản Trị Viên</h3>
+                <button onclick="closeModal('adminLoginModal')" class="p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+            </div>
+            <form onsubmit="handleAdminLogin(event)" class="mt-4 space-y-4">
+                <div>
+                    <label class="block text-xs font-medium mb-1.5">Mật khẩu Admin</label>
+                    <input type="password" id="adminPasswordInput" required placeholder="Nhập mật khẩu (mặc định: 123456)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeModal('adminLoginModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Hủy</button>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Xác Nhận</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CHỈNH SỬA HỒ SƠ -->
+    <div id="editProfileModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="text-lg font-bold">Chỉnh Sửa Hồ Sơ Cá Nhân</h3>
+                <button onclick="closeModal('editProfileModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+            </div>
+            <form id="editProfileForm" class="mt-4 space-y-4" onsubmit="handleSaveProfile(event)">
+                <div><label class="block text-xs font-medium mb-1">Họ và tên</label><input type="text" id="inputName" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                <div><label class="block text-xs font-medium mb-1">Chức danh</label><input type="text" id="inputRole" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                
+                <div>
+                    <label class="block text-xs font-medium mb-1">Ảnh đại diện (Chọn tệp ảnh từ máy)</label>
+                    <input type="file" id="inputAvatarFile" accept="image/*" onchange="handleAvatarFileSelect(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
+                    <input type="hidden" id="inputAvatar">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-xs font-medium mb-1">Số điện thoại</label><input type="tel" id="inputPhone" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                    <div><label class="block text-xs font-medium mb-1">Email</label><input type="email" id="inputEmail" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                </div>
+                <div><label class="block text-xs font-medium mb-1">Giới thiệu ngắn</label><textarea id="inputBio" rows="3" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></textarea></div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeModal('editProfileModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Hủy</button>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Lưu Thay Đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL THÊM / SỬA LIÊN KẾT MẠNG XÃ HỘI -->
+    <div id="linkModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 id="linkModalTitle" class="text-lg font-bold">Thêm Liên Kết Mới</h3>
+                <button onclick="closeModal('linkModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+            </div>
+            <form id="linkForm" class="mt-4 space-y-4" onsubmit="handleSaveLink(event)">
+                <input type="hidden" id="editLinkIndex" value="-1">
+                <div><label class="block text-xs font-medium mb-1">Tiêu đề (Ví dụ: Facebook, Zalo, TikTok...)</label><input type="text" id="linkTitle" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                <div><label class="block text-xs font-medium mb-1">Đường dẫn URL (https://...)</label><input type="url" id="linkUrl" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                <div><label class="block text-xs font-medium mb-1">Mô tả phụ (Ví dụ: @username hoặc SĐT)</label><input type="text" id="linkSubtitle" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Loại mạng xã hội (Biểu tượng)</label>
+                    <select id="linkIcon" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                        <option value="globe">🌐 Website chung</option>
+                        <option value="facebook">📘 Facebook</option>
+                        <option value="message-circle">💬 Zalo / Chat</option>
+                        <option value="video">🎥 TikTok / Video</option>
+                        <option value="youtube">▶️ YouTube</option>
+                        <option value="instagram">📸 Instagram</option>
+                        <option value="github">🐙 GitHub</option>
+                        <option value="send">✈️ Telegram</option>
+                        <option value="twitter">🐦 Twitter / X</option>
+                        <option value="linkedin">💼 LinkedIn</option>
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeModal('linkModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Hủy</button>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL XEM QR CODE -->
+    <div id="qrModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-xs w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl text-center">
+            <h3 class="text-base font-bold mb-1">Mã QR Danh Thiếp</h3>
+            <p class="text-xs text-slate-500 mb-4">Quét để truy cập trang Bio của bạn</p>
+            <div id="qrcodeContainer" class="bg-white p-3 rounded-2xl inline-block shadow-sm border border-slate-100 mb-4"></div>
+            <p id="qrOwnerLabel" class="text-xs font-semibold text-brand-600 mb-4"></p>
+            <button onclick="closeModal('qrModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Đóng</button>
+        </div>
+    </div>
+
+    <!-- MODAL DANH SÁCH LỜI NHẮN -->
+    <div id="messagesModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="text-base font-bold">Lời Nhắn Từ Khách Truy Cập</h3>
+                <button onclick="closeModal('messagesModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+            </div>
+            <div id="messagesListContainer" class="py-4 overflow-y-auto space-y-3 flex-1">
+                <!-- Hiển thị danh sách lời nhắn -->
+            </div>
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+                <button onclick="closeModal('messagesModal')" class="px-5 py-2 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 text-xs font-semibold">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hộp thoại thông báo nổi (Toast) -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden items-center gap-3 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-3 rounded-2xl shadow-xl text-xs font-medium">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span id="toastText">Thành công!</span>
+    </div>
+
+    <!-- JavaScript Xử Lý Toàn Bộ Ứng Dụng -->
+    <script>
+        let bioData = JSON.parse(JSON.stringify(window.INITIAL_BIO_DATA));
+        let isAdminLoggedIn = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLocalData();
+            renderProfile();
+            renderLinks();
+            updateMsgBadge();
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            // Tự động mở Admin nếu URL có ?admin=1
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === '1') {
+                openAdminLoginModal();
+            }
+
+            // Phím tắt Ctrl + Shift + E để mở đăng nhập Admin
+            window.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.shiftKey && e.code === 'KeyE') {
+                    e.preventDefault();
+                    openAdminLoginModal();
+                }
+            });
+        });
+
+        function loadLocalData() {
+            try {
+                const saved = localStorage.getItem('bio_app_data_v3');
+                if (saved) {
+                    bioData = JSON.parse(saved);
+                }
+            } catch(e) {}
+        }
+
+        function saveLocalData() {
+            try {
+                localStorage.setItem('bio_app_data_v3', JSON.stringify(bioData));
+            } catch(e) {}
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastText').textContent = msg;
+            t.classList.remove('hidden');
+            t.classList.add('flex');
+            setTimeout(() => {
+                t.classList.add('hidden');
+                t.classList.remove('flex');
+            }, 3000);
+        }
+
+        function renderProfile() {
+            const p = bioData.profile;
+            document.getElementById('displayName').textContent = p.name;
+            document.getElementById('displayRole').textContent = p.role;
+            document.getElementById('displayBio').textContent = p.bio;
+            document.getElementById('displayAvatar').src = p.avatar || 'https://placehold.co/300x300/4F46E5/FFFFFF?text=AVATAR';
+            document.getElementById('footerName').textContent = p.name;
+
+            const callBtn = document.getElementById('quickCallBtn');
+            if (callBtn) callBtn.href = `tel:${p.phone}`;
+        }
+
+        function renderLinks() {
+            const container = document.getElementById('linksContainer');
+            container.innerHTML = '';
+
+            bioData.links.forEach((link, index) => {
+                const a = document.createElement('a');
+                a.href = link.url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.className = 'group flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-brand-500/50 dark:hover:border-brand-500/50 transition-all transform hover:-translate-y-0.5';
+
+                let iconSvg = getIconSvg(link.icon);
+
+                a.innerHTML = `
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-brand-50 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                            ${iconSvg}
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-sm text-slate-900 dark:text-white">${escapeHTML(link.title)}</h3>
+                            ${link.subtitle ? `<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${escapeHTML(link.subtitle)}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        ${isAdminLoggedIn ? `
+                            <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl" onclick="event.preventDefault(); event.stopPropagation();">
+                                <button onclick="openEditLinkModal(${index})" class="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-lg text-slate-600 dark:text-slate-300" title="Sửa">✏️</button>
+                                <button onclick="deleteLink(${index})" class="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg text-red-600" title="Xóa">🗑️</button>
+                            </div>
+                        ` : ''}
+                        <svg class="w-5 h-5 text-slate-400 group-hover:translate-x-1 group-hover:text-brand-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </div>
+                `;
+                container.appendChild(a);
+            });
+        }
+
+        function getIconSvg(type) {
+            switch(type) {
+                case 'facebook': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>';
+                case 'message-circle': return '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>';
+                case 'video': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>';
+                case 'youtube': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>';
+                case 'instagram': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>';
+                case 'github': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>';
+                case 'send': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.14-.261.26-.536.26l.21-3.05 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.87 4.326-2.96-.924c-.64-.203-.654-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/></svg>';
+                case 'twitter': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>';
+                case 'linkedin': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>';
+                default: return '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>';
+            }
+        }
+
+        function copyPhone() {
+            const phone = bioData.profile.phone;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(phone).then(() => showToast('Đã sao chép số điện thoại!'));
+            } else {
+                const textArea = document.createElement("textarea");
+                textArea.value = phone;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Đã sao chép số điện thoại!');
+                } catch (err) {
+                    showToast('Không thể sao chép.');
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+
+        function openAdminLoginModal() { openModal('adminLoginModal'); }
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPasswordInput').value;
+            if (pass === '123456') {
+                isAdminLoggedIn = true;
+                closeModal('adminLoginModal');
+                document.getElementById('adminToolbar').classList.remove('hidden');
+                document.getElementById('addLinkBtnMobile').classList.remove('hidden');
+                renderLinks();
+                showToast('Đã đăng nhập quyền Quản trị viên thành công!');
+            } else {
+                showToast('Mật khẩu không chính xác (mặc định: 123456)');
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminToolbar').classList.add('hidden');
+            document.getElementById('addLinkBtnMobile').classList.add('hidden');
+            renderLinks();
+            showToast('Đã thoát chế độ Quản trị viên.');
+        }
+
+        function openEditProfileModal() {
+            const p = bioData.profile;
+            document.getElementById('inputName').value = p.name;
+            document.getElementById('inputRole').value = p.role;
+            document.getElementById('inputPhone').value = p.phone;
+            document.getElementById('inputEmail').value = p.email;
+            document.getElementById('inputBio').value = p.bio;
+            document.getElementById('inputAvatar').value = p.avatar;
+            openModal('editProfileModal');
+        }
+
+        function handleAvatarFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('inputAvatar').value = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleSaveProfile(e) {
+            e.preventDefault();
+            bioData.profile.name = document.getElementById('inputName').value.trim();
+            bioData.profile.role = document.getElementById('inputRole').value.trim();
+            bioData.profile.phone = document.getElementById('inputPhone').value.trim();
+            bioData.profile.email = document.getElementById('inputEmail').value.trim();
+            bioData.profile.bio = document.getElementById('inputBio').value.trim();
+            
+            const customAvatar = document.getElementById('inputAvatar').value.trim();
+            if (customAvatar) {
+                bioData.profile.avatar = customAvatar;
+            }
+
+            saveLocalData();
+            renderProfile();
+            closeModal('editProfileModal');
+            showToast('Đã cập nhật hồ sơ cá nhân thành công!');
+        }
+
+        function openAddLinkModal() {
+            document.getElementById('linkModalTitle').textContent = 'Thêm Liên Kết Mới';
+            document.getElementById('editLinkIndex').value = '-1';
+            document.getElementById('linkTitle').value = '';
+            document.getElementById('linkUrl').value = '';
+            document.getElementById('linkSubtitle').value = '';
+            document.getElementById('linkIcon').value = 'globe';
+            openModal('linkModal');
+        }
+
+        function openEditLinkModal(index) {
+            const link = bioData.links[index];
+            document.getElementById('linkModalTitle').textContent = 'Chỉnh Sửa Liên Kết';
+            document.getElementById('editLinkIndex').value = index;
+            document.getElementById('linkTitle').value = link.title;
+            document.getElementById('linkUrl').value = link.url;
+            document.getElementById('linkSubtitle').value = link.subtitle || '';
+            document.getElementById('linkIcon').value = link.icon;
+            openModal('linkModal');
+        }
+
+        function handleSaveLink(e) {
+            e.preventDefault();
+            const index = parseInt(document.getElementById('editLinkIndex').value);
+            const linkObj = {
+                title: document.getElementById('linkTitle').value.trim(),
+                url: document.getElementById('linkUrl').value.trim(),
+                subtitle: document.getElementById('linkSubtitle').value.trim(),
+                icon: document.getElementById('linkIcon').value
+            };
+
+            if (index === -1) {
+                bioData.links.push(linkObj);
+                showToast('Đã thêm liên kết mới.');
+            } else {
+                bioData.links[index] = linkObj;
+                showToast('Đã cập nhật liên kết.');
+            }
+
+            saveLocalData();
+            renderLinks();
+            closeModal('linkModal');
+        }
+
+        function deleteLink(index) {
+            bioData.links.splice(index, 1);
+            saveLocalData();
+            renderLinks();
+            showToast('Đã xóa liên kết.');
+        }
+
+        function openQRModal() {
+            const container = document.getElementById('qrcodeContainer');
+            container.innerHTML = '';
+            const currentUrl = window.location.href.split('#')[0];
+            new QRCode(container, {
+                text: currentUrl,
+                width: 180,
+                height: 180
+            });
+            document.getElementById('qrOwnerLabel').textContent = bioData.profile.name;
+            openModal('qrModal');
+        }
+
+        function handleSendMessage(e) {
+            e.preventDefault();
+            const msg = {
+                name: document.getElementById('msgName').value.trim(),
+                contact: document.getElementById('msgContact').value.trim(),
+                content: document.getElementById('msgContent').value.trim(),
+                time: new Date().toLocaleString('vi-VN')
+            };
+            if (!bioData.messages) bioData.messages = [];
+            bioData.messages.unshift(msg);
+            saveLocalData();
+            updateMsgBadge();
+            document.getElementById('contactForm').reset();
+            showToast('Đã gửi lời nhắn thành công!');
+        }
+
+        function updateMsgBadge() {
+            const count = (bioData.messages || []).length;
+            const badge = document.getElementById('msgCountBadge');
+            if (badge) badge.textContent = count;
+        }
+
+        function openMessagesModal() {
+            const container = document.getElementById('messagesListContainer');
+            const list = bioData.messages || [];
+            if (list.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Chưa có lời nhắn nào.</p>';
+            } else {
+                container.innerHTML = list.map(m => `
+                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 text-xs space-y-1">
+                        <div class="flex justify-between font-semibold">
+                            <span>${escapeHTML(m.name)}</span>
+                            <span class="text-slate-400 text-[10px]">${escapeHTML(m.time)}</span>
+                        </div>
+                        <p class="text-brand-600 dark:text-brand-400">Liên hệ: ${escapeHTML(m.contact)}</p>
+                        <p class="text-slate-600 dark:text-slate-300 mt-1">${escapeHTML(m.content)}</p>
+                    </div>
+                `).join('');
+            }
+            openModal('messagesModal');
+        }
+
+        function escapeHTML(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function exportReadyHTML() {
+            const cloneData = JSON.parse(JSON.stringify(bioData));
+            cloneData.messages = [];
+
+            const scriptTag = document.getElementById('bioDataScript');
+            if (scriptTag) {
+                scriptTag.textContent = `window.INITIAL_BIO_DATA = ${JSON.stringify(cloneData, null, 4)};`;
+            }
+
+            isAdminLoggedIn = false;
+            document.getElementById('adminToolbar').classList.add('hidden');
+            document.getElementById('addLinkBtnMobile').classList.add('hidden');
+            renderLinks();
+
+            const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Đã xuất tệp index.html sạch sẽ để đăng lên GitHub!');
+        }
+    </script>
+</body>
+</html>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Bio Cá Nhân</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tải Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Thư viện tạo mã QR (qrcode.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Dữ liệu Bio ban đầu - Sẽ được cập nhật tự động khi bạn bấm Xuất Tệp -->
+    <script id="bioDataScript">
+        window.INITIAL_BIO_DATA = {
+            "profile": {
+                "name": "Đường Văn Tùng",
+                "role": "Trang Bio Cá Nhân",
+                "bio": "Chào mừng bạn ghé thăm trang Bio của mình! Kết nối với mình qua các liên kết bên dưới.",
+                "avatar": "https://placehold.co/300x300/4F46E5/FFFFFF?text=AVATAR",
+                "phone": "0336932590",
+                "email": "vantung@example.com"
+            },
+            "links": [
+                {
+                    "title": "Facebook Cá Nhân",
+                    "url": "https://facebook.com",
+                    "icon": "facebook",
+                    "subtitle": "@vantung"
+                },
+                {
+                    "title": "Nhắn Tin Zalo",
+                    "url": "https://zalo.me/0336932590",
+                    "icon": "message-circle",
+                    "subtitle": "0336932590"
+                },
+                {
+                    "title": "Kênh TikTok",
+                    "url": "https://tiktok.com",
+                    "icon": "video",
+                    "subtitle": "@vantung.tiktok"
+                },
+                {
+                    "title": "Trang Web Chính Thức",
+                    "url": "https://example.com",
+                    "icon": "globe",
+                    "subtitle": "example.com"
+                }
+            ],
+            "messages": []
+        };
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white transition-colors duration-300">
+
+    <!-- Thanh công cụ Admin / Khách (Được ẩn mặc định với khách, chỉ hiện khi đăng nhập Admin) -->
+    <div id="adminToolbar" class="hidden bg-brand-600 text-white text-xs sm:text-sm py-2 px-4 shadow-md sticky top-0 z-40">
+        <div class="max-w-2xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="font-semibold">Đang ở chế độ Quản trị viên (Admin)</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="openEditProfileModal()" class="px-3 py-1 rounded-lg bg-white/15 hover:bg-white/25 transition font-medium">Sửa Hồ Sơ</button>
+                <button onclick="openAddLinkModal()" class="px-3 py-1 rounded-lg bg-white/15 hover:bg-white/25 transition font-medium">Thêm Liên Kết</button>
+                <button onclick="openMessagesModal()" class="px-3 py-1 rounded-lg bg-white/15 hover:bg-white/25 transition font-medium relative">
+                    Lời Nhắn (<span id="msgCountBadge">0</span>)
+                </button>
+                <button onclick="exportReadyHTML()" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 transition font-semibold shadow-xs">Xuất Tệp index.html</button>
+                <button onclick="logoutAdmin()" class="px-2 py-1 rounded-lg hover:bg-red-500/50 transition" title="Thoát Admin">✕</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thanh định hướng nhỏ phía trên -->
+    <header class="w-full max-w-2xl mx-auto px-4 pt-6 flex justify-between items-center">
+        <button onclick="toggleTheme()" class="p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs hover:scale-105 transition" title="Đổi giao diện Sáng/Tối">
+            <svg id="themeIcon" class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        </button>
+        <button onclick="openQRModal()" class="px-4 py-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs text-xs font-semibold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+            <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+            <span>Mã QR Danh Thiếp</span>
+        </button>
+    </header>
+
+    <!-- Phần Nội Dung Chính (Bio Card) -->
+    <main class="w-full max-w-2xl mx-auto px-4 py-8 flex-1 flex flex-col items-center">
+        
+        <!-- Khung Hồ Sơ Cá Nhân -->
+        <div class="w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xl p-6 sm:p-8 text-center relative overflow-hidden transition-all">
+            
+            <!-- Ảnh Đại Diện (Nhấp đúp vào Avatar để mở nhanh đăng nhập Admin) -->
+            <div class="relative w-32 h-32 mx-auto mb-5 group cursor-pointer" ondblclick="openAdminLoginModal()" title="Nhấp đúp để đăng nhập Admin">
+                <img id="displayAvatar" src="" alt="Avatar" class="w-full h-full rounded-full object-cover shadow-md border-4 border-white dark:border-slate-800 group-hover:opacity-95 transition">
+                <div class="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 flex items-center justify-center" title="Đang hoạt động"></div>
+            </div>
+
+            <!-- Tên & Chức danh -->
+            <div class="flex items-center justify-center gap-2 mb-1">
+                <h1 id="displayName" class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white"></h1>
+                <!-- Huy hiệu xác thực xanh -->
+                <svg class="w-6 h-6 text-sky-500 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <p id="displayRole" class="text-sm font-medium text-brand-600 dark:text-brand-400 mb-4"></p>
+
+            <!-- Giới thiệu ngắn -->
+            <p id="displayBio" class="text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto leading-relaxed mb-6"></p>
+
+            <!-- Nút liên hệ nhanh (Gọi & Sao chép SĐT) -->
+            <div class="grid grid-cols-2 gap-3 max-w-md mx-auto">
+                <a id="quickCallBtn" href="#" class="py-3 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                    <span>Gọi Ngay</span>
+                </a>
+                <button onclick="copyPhone()" class="py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                    <span>Sao Chép SĐT</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tiêu đề danh sách mạng xã hội -->
+        <div class="w-full flex items-center justify-between mt-8 mb-4 px-2">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kết Nối Trực Tuyến</h2>
+            <button id="addLinkBtnMobile" onclick="openAddLinkModal()" class="hidden text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline">+ Thêm liên kết</button>
+        </div>
+
+        <!-- Danh sách các nút Mạng Xã Hội -->
+        <div id="linksContainer" class="w-full space-y-3.5">
+            <!-- Được render động bằng JavaScript -->
+        </div>
+
+        <!-- Khung Gửi Lời Nhắn Trực Tiếp Cho Chủ Nhân -->
+        <div class="w-full mt-10 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-lg p-6 sm:p-8">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Gửi Lời Nhắn Trực Tiếp</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Để lại lời nhắn hoặc yêu cầu hợp tác, mình sẽ phản hồi sớm nhất.</p>
+            
+            <form id="contactForm" onsubmit="handleSendMessage(event)" class="mt-5 space-y-4">
+                <div>
+                    <input type="text" id="msgName" required placeholder="Họ tên của bạn" class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <input type="text" id="msgContact" required placeholder="Số điện thoại hoặc Email liên hệ" class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <textarea id="msgContent" rows="3" required placeholder="Nội dung lời nhắn..." class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 text-white font-semibold text-sm transition shadow-sm">
+                    Gửi Lời Nhắn
+                </button>
+            </form>
+        </div>
+
+    </main>
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Bio Cá Nhân</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tải Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Thư viện tạo mã QR (qrcode.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Dữ liệu Bio ban đầu - Sẽ được cập nhật tự động khi bạn bấm Xuất Tệp -->
+    <script id="bioDataScript">
+        window.INITIAL_BIO_DATA = {
+            "profile": {
+                "name": "Đường Văn Tùng",
+                "role": "Trang Bio Cá Nhân",
+                "bio": "Chào mừng bạn ghé thăm trang Bio của mình! Kết nối với mình qua các liên kết bên dưới.",
+                "avatar": "https://placehold.co/300x300/4F46E5/FFFFFF?text=AVATAR",
+                "phone": "0336932590",
+                "email": "vantung@example.com"
+            },
+            "links": [
+                {
+                    "title": "Facebook Cá Nhân",
+                    "url": "https://facebook.com",
+                    "icon": "facebook",
+                    "subtitle": "@vantung"
+                },
+                {
+                    "title": "Nhắn Tin Zalo",
+                    "url": "https://zalo.me/0336932590",
+                    "icon": "message-circle",
+                    "subtitle": "0336932590"
+                },
+                {
+                    "title": "Kênh TikTok",
+                    "url": "https://tiktok.com",
+                    "icon": "video",
+                    "subtitle": "@vantung.tiktok"
+                },
+                {
+                    "title": "Trang Web Chính Thức",
+                    "url": "https://example.com",
+                    "icon": "globe",
+                    "subtitle": "example.com"
+                }
+            ],
+            "messages": []
+        };
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white transition-colors duration-300">
+
+    <!-- Thanh công cụ Admin / Khách (Được ẩn mặc định với khách, chỉ hiện khi đăng nhập Admin) -->
+    <div id="adminToolbar" class="hidden bg-brand-600 text-white text-xs sm:text-sm py-2 px-4 shadow-md sticky top-0 z-40">
+        <div class="max-w-2xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="font-semibold">Đang ở chế độ Quản trị viên (Admin)</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="openEditProfileModal()" class="px-3 py-1 rounded-lg bg-white/15 hover:bg-white/25 transition font-medium">Sửa Hồ Sơ</button>
+                <button onclick="openAddLinkModal()" class="px-3 py-1 rounded-lg bg-white/15 hover:bg-white/25 transition font-medium">Thêm Liên Kết</button>
+                <button onclick="openMessagesModal()" class="px-3 py-1 rounded-lg bg-white/15 hover:bg-white/25 transition font-medium relative">
+                    Lời Nhắn (<span id="msgCountBadge">0</span>)
+                </button>
+                <button onclick="exportReadyHTML()" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 transition font-semibold shadow-xs">Xuất Tệp index.html</button>
+                <button onclick="logoutAdmin()" class="px-2 py-1 rounded-lg hover:bg-red-500/50 transition" title="Thoát Admin">✕</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thanh định hướng nhỏ phía trên -->
+    <header class="w-full max-w-2xl mx-auto px-4 pt-6 flex justify-between items-center">
+        <button onclick="toggleTheme()" class="p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs hover:scale-105 transition" title="Đổi giao diện Sáng/Tối">
+            <svg id="themeIcon" class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        </button>
+        <button onclick="openQRModal()" class="px-4 py-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs text-xs font-semibold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+            <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+            <span>Mã QR Danh Thiếp</span>
+        </button>
+    </header>
+
+    <!-- Phần Nội Dung Chính (Bio Card) -->
+    <main class="w-full max-w-2xl mx-auto px-4 py-8 flex-1 flex flex-col items-center">
+        
+        <!-- Khung Hồ Sơ Cá Nhân -->
+        <div class="w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xl p-6 sm:p-8 text-center relative overflow-hidden transition-all">
+            
+            <!-- Ảnh Đại Diện (Nhấp đúp vào Avatar để mở nhanh đăng nhập Admin) -->
+            <div class="relative w-32 h-32 mx-auto mb-5 group cursor-pointer" ondblclick="openAdminLoginModal()" title="Nhấp đúp để đăng nhập Admin">
+                <img id="displayAvatar" src="" alt="Avatar" class="w-full h-full rounded-full object-cover shadow-md border-4 border-white dark:border-slate-800 group-hover:opacity-95 transition">
+                <div class="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 flex items-center justify-center" title="Đang hoạt động"></div>
+            </div>
+
+            <!-- Tên & Chức danh -->
+            <div class="flex items-center justify-center gap-2 mb-1">
+                <h1 id="displayName" class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white"></h1>
+                <!-- Huy hiệu xác thực xanh -->
+                <svg class="w-6 h-6 text-sky-500 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <p id="displayRole" class="text-sm font-medium text-brand-600 dark:text-brand-400 mb-4"></p>
+
+            <!-- Giới thiệu ngắn -->
+            <p id="displayBio" class="text-sm text-slate-600 dark:text-slate-300 max-w-md mx-auto leading-relaxed mb-6"></p>
+
+            <!-- Nút liên hệ nhanh (Gọi & Sao chép SĐT) -->
+            <div class="grid grid-cols-2 gap-3 max-w-md mx-auto">
+                <a id="quickCallBtn" href="#" class="py-3 px-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                    <span>Gọi Ngay</span>
+                </a>
+                <button onclick="copyPhone()" class="py-3 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                    <span>Sao Chép SĐT</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tiêu đề danh sách mạng xã hội -->
+        <div class="w-full flex items-center justify-between mt-8 mb-4 px-2">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kết Nối Trực Tuyến</h2>
+            <button id="addLinkBtnMobile" onclick="openAddLinkModal()" class="hidden text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline">+ Thêm liên kết</button>
+        </div>
+
+        <!-- Danh sách các nút Mạng Xã Hội -->
+        <div id="linksContainer" class="w-full space-y-3.5">
+            <!-- Được render động bằng JavaScript -->
+        </div>
+
+        <!-- Khung Gửi Lời Nhắn Trực Tiếp Cho Chủ Nhân -->
+        <div class="w-full mt-10 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-lg p-6 sm:p-8">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Gửi Lời Nhắn Trực Tiếp</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Để lại lời nhắn hoặc yêu cầu hợp tác, mình sẽ phản hồi sớm nhất.</p>
+            
+            <form id="contactForm" onsubmit="handleSendMessage(event)" class="mt-5 space-y-4">
+                <div>
+                    <input type="text" id="msgName" required placeholder="Họ tên của bạn" class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <input type="text" id="msgContact" required placeholder="Số điện thoại hoặc Email liên hệ" class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <textarea id="msgContent" rows="3" required placeholder="Nội dung lời nhắn..." class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900 text-white font-semibold text-sm transition shadow-sm">
+                    Gửi Lời Nhắn
+                </button>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- Chân trang (Footer) -->
+    <footer class="w-full max-w-2xl mx-auto px-4 py-6 text-center text-xs text-slate-400 dark:text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-200 dark:border-slate-800/60 mt-12">
+        <p>© <span id="currentYear">2026</span> <span id="footerName">Đường Văn Tùng</span>. All rights reserved.</p>
+        <!-- Nút mở khóa Admin kín đáo ở góc chân trang -->
+        <button onclick="openAdminLoginModal()" class="flex items-center gap-1.5 opacity-60 hover:opacity-100 transition text-slate-500 dark:text-slate-400">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <span>Quản Trị Viên</span>
+        </button>
+    </footer>
+
+    <!-- MODAL ĐĂNG NHẬP ADMIN -->
+    <div id="adminLoginModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="text-base font-bold">Đăng Nhập Quản Trị Viên</h3>
+                <button onclick="closeModal('adminLoginModal')" class="p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+            </div>
+            <form onsubmit="handleAdminLogin(event)" class="mt-4 space-y-4">
+                <div>
+                    <label class="block text-xs font-medium mb-1.5">Mật khẩu Admin</label>
+                    <input type="password" id="adminPasswordInput" required placeholder="Nhập mật khẩu (mặc định: 123456)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeModal('adminLoginModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Hủy</button>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Xác Nhận</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CHỈNH SỬA HỒ SƠ -->
+    <div id="editProfileModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="text-lg font-bold">Chỉnh Sửa Hồ Sơ Cá Nhân</h3>
+                <button onclick="closeModal('editProfileModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+            </div>
+            <form id="editProfileForm" class="mt-4 space-y-4" onsubmit="handleSaveProfile(event)">
+                <div><label class="block text-xs font-medium mb-1">Họ và tên</label><input type="text" id="inputName" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                <div><label class="block text-xs font-medium mb-1">Chức danh</label><input type="text" id="inputRole" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                
+                <div>
+                    <label class="block text-xs font-medium mb-1">Ảnh đại diện (Chọn tệp ảnh từ máy)</label>
+                    <input type="file" id="inputAvatarFile" accept="image/*" onchange="handleAvatarFileSelect(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
+                    <input type="hidden" id="inputAvatar">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-xs font-medium mb-1">Số điện thoại</label><input type="tel" id="inputPhone" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                    <div><label class="block text-xs font-medium mb-1">Email</label><input type="email" id="inputEmail" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                </div>
+                <div><label class="block text-xs font-medium mb-1">Giới thiệu ngắn</label><textarea id="inputBio" rows="3" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></textarea></div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeModal('editProfileModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Hủy</button>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Lưu Thay Đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL THÊM / SỬA LIÊN KẾT MẠNG XÃ HỘI -->
+    <div id="linkModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 id="linkModalTitle" class="text-lg font-bold">Thêm Liên Kết Mới</h3>
+                <button onclick="closeModal('linkModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+            </div>
+            <form id="linkForm" class="mt-4 space-y-4" onsubmit="handleSaveLink(event)">
+                <input type="hidden" id="editLinkIndex" value="-1">
+                <div><label class="block text-xs font-medium mb-1">Tiêu đề (Ví dụ: Facebook, Zalo, TikTok...)</label><input type="text" id="linkTitle" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                <div><label class="block text-xs font-medium mb-1">Đường dẫn URL (https://...)</label><input type="url" id="linkUrl" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                <div><label class="block text-xs font-medium mb-1">Mô tả phụ (Ví dụ: @username hoặc SĐT)</label><input type="text" id="linkSubtitle" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Loại mạng xã hội (Biểu tượng)</label>
+                    <select id="linkIcon" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                        <option value="globe">🌐 Website chung</option>
+                        <option value="facebook">📘 Facebook</option>
+                        <option value="message-circle">💬 Zalo / Chat</option>
+                        <option value="video">🎥 TikTok / Video</option>
+                        <option value="youtube">▶️ YouTube</option>
+                        <option value="instagram">📸 Instagram</option>
+                        <option value="github">🐙 GitHub</option>
+                        <option value="send">✈️ Telegram</option>
+                        <option value="twitter">🐦 Twitter / X</option>
+                        <option value="linkedin">💼 LinkedIn</option>
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeModal('linkModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Hủy</button>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL XEM QR CODE -->
+    <div id="qrModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-xs w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl text-center">
+            <h3 class="text-base font-bold mb-1">Mã QR Danh Thiếp</h3>
+            <p class="text-xs text-slate-500 mb-4">Quét để truy cập trang Bio của bạn</p>
+            <div id="qrcodeContainer" class="bg-white p-3 rounded-2xl inline-block shadow-sm border border-slate-100 mb-4"></div>
+            <p id="qrOwnerLabel" class="text-xs font-semibold text-brand-600 mb-4"></p>
+            <button onclick="closeModal('qrModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Đóng</button>
+        </div>
+    </div>
+
+    <!-- MODAL DANH SÁCH LỜI NHẮN -->
+    <div id="messagesModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="text-base font-bold">Lời Nhắn Từ Khách Truy Cập</h3>
+                <button onclick="closeModal('messagesModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+            </div>
+            <div id="messagesListContainer" class="py-4 overflow-y-auto space-y-3 flex-1">
+                <!-- Hiển thị danh sách lời nhắn -->
+            </div>
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+                <button onclick="closeModal('messagesModal')" class="px-5 py-2 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 text-xs font-semibold">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hộp thoại thông báo nổi (Toast) -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden items-center gap-3 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-3 rounded-2xl shadow-xl text-xs font-medium">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span id="toastText">Thành công!</span>
+    </div>
+
+    <!-- JavaScript Xử Lý Toàn Bộ Ứng Dụng -->
+    <script>
+        let bioData = JSON.parse(JSON.stringify(window.INITIAL_BIO_DATA));
+        let isAdminLoggedIn = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLocalData();
+            renderProfile();
+            renderLinks();
+            updateMsgBadge();
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            // Tự động mở Admin nếu URL có ?admin=1
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === '1') {
+                openAdminLoginModal();
+            }
+
+            // Phím tắt Ctrl + Shift + E để mở đăng nhập Admin
+            window.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.shiftKey && e.code === 'KeyE') {
+                    e.preventDefault();
+                    openAdminLoginModal();
+                }
+            });
+        });
+
+        function loadLocalData() {
+            try {
+                const saved = localStorage.getItem('bio_app_data_v3');
+                if (saved) {
+                    bioData = JSON.parse(saved);
+                }
+            } catch(e) {}
+        }
+
+        function saveLocalData() {
+            try {
+                localStorage.setItem('bio_app_data_v3', JSON.stringify(bioData));
+            } catch(e) {}
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastText').textContent = msg;
+            t.classList.remove('hidden');
+            t.classList.add('flex');
+            setTimeout(() => {
+                t.classList.add('hidden');
+                t.classList.remove('flex');
+            }, 3000);
+        }
+
+        function renderProfile() {
+            const p = bioData.profile;
+            document.getElementById('displayName').textContent = p.name;
+            document.getElementById('displayRole').textContent = p.role;
+            document.getElementById('displayBio').textContent = p.bio;
+            document.getElementById('displayAvatar').src = p.avatar || 'https://placehold.co/300x300/4F46E5/FFFFFF?text=AVATAR';
+            document.getElementById('footerName').textContent = p.name;
+
+            const callBtn = document.getElementById('quickCallBtn');
+            if (callBtn) callBtn.href = `tel:${p.phone}`;
+        }
+
+        function renderLinks() {
+            const container = document.getElementById('linksContainer');
+            container.innerHTML = '';
+
+            bioData.links.forEach((link, index) => {
+                const a = document.createElement('a');
+                a.href = link.url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.className = 'group flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-brand-500/50 dark:hover:border-brand-500/50 transition-all transform hover:-translate-y-0.5';
+
+                let iconSvg = getIconSvg(link.icon);
+
+                a.innerHTML = `
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-brand-50 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                            ${iconSvg}
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-sm text-slate-900 dark:text-white">${escapeHTML(link.title)}</h3>
+                            ${link.subtitle ? `<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${escapeHTML(link.subtitle)}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        ${isAdminLoggedIn ? `
+                            <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl" onclick="event.preventDefault(); event.stopPropagation();">
+                                <button onclick="openEditLinkModal(${index})" class="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-lg text-slate-600 dark:text-slate-300" title="Sửa">✏️</button>
+                                <button onclick="deleteLink(${index})" class="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg text-red-600" title="Xóa">🗑️</button>
+                            </div>
+                        ` : ''}
+                        <svg class="w-5 h-5 text-slate-400 group-hover:translate-x-1 group-hover:text-brand-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </div>
+                `;
+                container.appendChild(a);
+            });
+        }
+
+        function getIconSvg(type) {
+            switch(type) {
+                case 'facebook': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>';
+                case 'message-circle': return '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>';
+                case 'video': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>';
+                case 'youtube': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>';
+                case 'instagram': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>';
+                case 'github': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>';
+                case 'send': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.14-.261.26-.536.26l.21-3.05 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.87 4.326-2.96-.924c-.64-.203-.654-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/></svg>';
+                case 'twitter': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>';
+                case 'linkedin': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>';
+                default: return '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>';
+            }
+        }
+
+        function copyPhone() {
+            const phone = bioData.profile.phone;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(phone).then(() => showToast('Đã sao chép số điện thoại!'));
+            } else {
+                const textArea = document.createElement("textarea");
+                textArea.value = phone;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Đã sao chép số điện thoại!');
+                } catch (err) {
+                    showToast('Không thể sao chép.');
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+
+        function openAdminLoginModal() { openModal('adminLoginModal'); }
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPasswordInput').value;
+            if (pass === '123456') {
+                isAdminLoggedIn = true;
+                closeModal('adminLoginModal');
+                document.getElementById('adminToolbar').classList.remove('hidden');
+                document.getElementById('addLinkBtnMobile').classList.remove('hidden');
+                renderLinks();
+                showToast('Đã đăng nhập quyền Quản trị viên thành công!');
+            } else {
+                showToast('Mật khẩu không chính xác (mặc định: 123456)');
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminToolbar').classList.add('hidden');
+            document.getElementById('addLinkBtnMobile').classList.add('hidden');
+            renderLinks();
+            showToast('Đã thoát chế độ Quản trị viên.');
+        }
+
+        function openEditProfileModal() {
+            const p = bioData.profile;
+            document.getElementById('inputName').value = p.name;
+            document.getElementById('inputRole').value = p.role;
+            document.getElementById('inputPhone').value = p.phone;
+            document.getElementById('inputEmail').value = p.email;
+            document.getElementById('inputBio').value = p.bio;
+            document.getElementById('inputAvatar').value = p.avatar;
+            openModal('editProfileModal');
+        }
+
+        function handleAvatarFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('inputAvatar').value = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleSaveProfile(e) {
+            e.preventDefault();
+            bioData.profile.name = document.getElementById('inputName').value.trim();
+            bioData.profile.role = document.getElementById('inputRole').value.trim();
+            bioData.profile.phone = document.getElementById('inputPhone').value.trim();
+            bioData.profile.email = document.getElementById('inputEmail').value.trim();
+            bioData.profile.bio = document.getElementById('inputBio').value.trim();
+            
+            const customAvatar = document.getElementById('inputAvatar').value.trim();
+            if (customAvatar) {
+                bioData.profile.avatar = customAvatar;
+            }
+
+            saveLocalData();
+            renderProfile();
+            closeModal('editProfileModal');
+            showToast('Đã cập nhật hồ sơ cá nhân thành công!');
+        }
+
+        function openAddLinkModal() {
+            document.getElementById('linkModalTitle').textContent = 'Thêm Liên Kết Mới';
+            document.getElementById('editLinkIndex').value = '-1';
+            document.getElementById('linkTitle').value = '';
+            document.getElementById('linkUrl').value = '';
+            document.getElementById('linkSubtitle').value = '';
+            document.getElementById('linkIcon').value = 'globe';
+            openModal('linkModal');
+        }
+
+        function openEditLinkModal(index) {
+            const link = bioData.links[index];
+            document.getElementById('linkModalTitle').textContent = 'Chỉnh Sửa Liên Kết';
+            document.getElementById('editLinkIndex').value = index;
+            document.getElementById('linkTitle').value = link.title;
+            document.getElementById('linkUrl').value = link.url;
+            document.getElementById('linkSubtitle').value = link.subtitle || '';
+            document.getElementById('linkIcon').value = link.icon;
+            openModal('linkModal');
+        }
+
+        function handleSaveLink(e) {
+            e.preventDefault();
+            const index = parseInt(document.getElementById('editLinkIndex').value);
+            const linkObj = {
+                title: document.getElementById('linkTitle').value.trim(),
+                url: document.getElementById('linkUrl').value.trim(),
+                subtitle: document.getElementById('linkSubtitle').value.trim(),
+                icon: document.getElementById('linkIcon').value
+            };
+
+            if (index === -1) {
+                bioData.links.push(linkObj);
+                showToast('Đã thêm liên kết mới.');
+            } else {
+                bioData.links[index] = linkObj;
+                showToast('Đã cập nhật liên kết.');
+            }
+
+            saveLocalData();
+            renderLinks();
+            closeModal('linkModal');
+        }
+
+        function deleteLink(index) {
+            bioData.links.splice(index, 1);
+            saveLocalData();
+            renderLinks();
+            showToast('Đã xóa liên kết.');
+        }
+
+        function openQRModal() {
+            const container = document.getElementById('qrcodeContainer');
+            container.innerHTML = '';
+            const currentUrl = window.location.href.split('#')[0];
+            new QRCode(container, {
+                text: currentUrl,
+                width: 180,
+                height: 180
+            });
+            document.getElementById('qrOwnerLabel').textContent = bioData.profile.name;
+            openModal('qrModal');
+        }
+
+        function handleSendMessage(e) {
+            e.preventDefault();
+            const msg = {
+                name: document.getElementById('msgName').value.trim(),
+                contact: document.getElementById('msgContact').value.trim(),
+                content: document.getElementById('msgContent').value.trim(),
+                time: new Date().toLocaleString('vi-VN')
+            };
+            if (!bioData.messages) bioData.messages = [];
+            bioData.messages.unshift(msg);
+            saveLocalData();
+            updateMsgBadge();
+            document.getElementById('contactForm').reset();
+            showToast('Đã gửi lời nhắn thành công!');
+        }
+
+        function updateMsgBadge() {
+            const count = (bioData.messages || []).length;
+            const badge = document.getElementById('msgCountBadge');
+            if (badge) badge.textContent = count;
+        }
+
+        function openMessagesModal() {
+            const container = document.getElementById('messagesListContainer');
+            const list = bioData.messages || [];
+            if (list.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Chưa có lời nhắn nào.</p>';
+            } else {
+                container.innerHTML = list.map(m => `
+                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 text-xs space-y-1">
+                        <div class="flex justify-between font-semibold">
+                            <span>${escapeHTML(m.name)}</span>
+                            <span class="text-slate-400 text-[10px]">${escapeHTML(m.time)}</span>
+                        </div>
+                        <p class="text-brand-600 dark:text-brand-400">Liên hệ: ${escapeHTML(m.contact)}</p>
+                        <p class="text-slate-600 dark:text-slate-300 mt-1">${escapeHTML(m.content)}</p>
+                    </div>
+                `).join('');
+            }
+            openModal('messagesModal');
+        }
+
+        function escapeHTML(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function exportReadyHTML() {
+            const cloneData = JSON.parse(JSON.stringify(bioData));
+            cloneData.messages = [];
+
+            const scriptTag = document.getElementById('bioDataScript');
+            if (scriptTag) {
+                scriptTag.textContent = `window.INITIAL_BIO_DATA = ${JSON.stringify(cloneData, null, 4)};`;
+            }
+
+            isAdminLoggedIn = false;
+            document.getElementById('adminToolbar').classList.add('hidden');
+            document.getElementById('addLinkBtnMobile').classList.add('hidden');
+            renderLinks();
+
+            const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Đã xuất tệp index.html sạch sẽ để đăng lên GitHub!');
+        }
+    </script>
+</body>
+</html>
+    <!-- Chân trang (Footer) -->
+    <footer class="w-full max-w-2xl mx-auto px-4 py-6 text-center text-xs text-slate-400 dark:text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-200 dark:border-slate-800/60 mt-12">
+        <p>© <span id="currentYear">2026</span> <span id="footerName">Đường Văn Tùng</span>. All rights reserved.</p>
+        <!-- Nút mở khóa Admin kín đáo ở góc chân trang -->
+        <button onclick="openAdminLoginModal()" class="flex items-center gap-1.5 opacity-60 hover:opacity-100 transition text-slate-500 dark:text-slate-400">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <span>Quản Trị Viên</span>
+        </button>
+    </footer>
+
+    <!-- MODAL ĐĂNG NHẬP ADMIN -->
+    <div id="adminLoginModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="text-base font-bold">Đăng Nhập Quản Trị Viên</h3>
+                <button onclick="closeModal('adminLoginModal')" class="p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+            </div>
+            <form onsubmit="handleAdminLogin(event)" class="mt-4 space-y-4">
+                <div>
+                    <label class="block text-xs font-medium mb-1.5">Mật khẩu Admin</label>
+                    <input type="password" id="adminPasswordInput" required placeholder="Nhập mật khẩu (mặc định: 123456)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeModal('adminLoginModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Hủy</button>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Xác Nhận</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CHỈNH SỬA HỒ SƠ -->
+    <div id="editProfileModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="text-lg font-bold">Chỉnh Sửa Hồ Sơ Cá Nhân</h3>
+                <button onclick="closeModal('editProfileModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+            </div>
+            <form id="editProfileForm" class="mt-4 space-y-4" onsubmit="handleSaveProfile(event)">
+                <div><label class="block text-xs font-medium mb-1">Họ và tên</label><input type="text" id="inputName" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                <div><label class="block text-xs font-medium mb-1">Chức danh</label><input type="text" id="inputRole" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                
+                <div>
+                    <label class="block text-xs font-medium mb-1">Ảnh đại diện (Chọn tệp ảnh từ máy)</label>
+                    <input type="file" id="inputAvatarFile" accept="image/*" onchange="handleAvatarFileSelect(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
+                    <input type="hidden" id="inputAvatar">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-xs font-medium mb-1">Số điện thoại</label><input type="tel" id="inputPhone" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                    <div><label class="block text-xs font-medium mb-1">Email</label><input type="email" id="inputEmail" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                </div>
+                <div><label class="block text-xs font-medium mb-1">Giới thiệu ngắn</label><textarea id="inputBio" rows="3" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></textarea></div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeModal('editProfileModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Hủy</button>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Lưu Thay Đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL THÊM / SỬA LIÊN KẾT MẠNG XÃ HỘI -->
+    <div id="linkModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 id="linkModalTitle" class="text-lg font-bold">Thêm Liên Kết Mới</h3>
+                <button onclick="closeModal('linkModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+            </div>
+            <form id="linkForm" class="mt-4 space-y-4" onsubmit="handleSaveLink(event)">
+                <input type="hidden" id="editLinkIndex" value="-1">
+                <div><label class="block text-xs font-medium mb-1">Tiêu đề (Ví dụ: Facebook, Zalo, TikTok...)</label><input type="text" id="linkTitle" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                <div><label class="block text-xs font-medium mb-1">Đường dẫn URL (https://...)</label><input type="url" id="linkUrl" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                <div><label class="block text-xs font-medium mb-1">Mô tả phụ (Ví dụ: @username hoặc SĐT)</label><input type="text" id="linkSubtitle" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Loại mạng xã hội (Biểu tượng)</label>
+                    <select id="linkIcon" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                        <option value="globe">🌐 Website chung</option>
+                        <option value="facebook">📘 Facebook</option>
+                        <option value="message-circle">💬 Zalo / Chat</option>
+                        <option value="video">🎥 TikTok / Video</option>
+                        <option value="youtube">▶️ YouTube</option>
+                        <option value="instagram">📸 Instagram</option>
+                        <option value="github">🐙 GitHub</option>
+                        <option value="send">✈️ Telegram</option>
+                        <option value="twitter">🐦 Twitter / X</option>
+                        <option value="linkedin">💼 LinkedIn</option>
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeModal('linkModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Hủy</button>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL XEM QR CODE -->
+    <div id="qrModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-xs w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl text-center">
+            <h3 class="text-base font-bold mb-1">Mã QR Danh Thiếp</h3>
+            <p class="text-xs text-slate-500 mb-4">Quét để truy cập trang Bio của bạn</p>
+            <div id="qrcodeContainer" class="bg-white p-3 rounded-2xl inline-block shadow-sm border border-slate-100 mb-4"></div>
+            <p id="qrOwnerLabel" class="text-xs font-semibold text-brand-600 mb-4"></p>
+            <button onclick="closeModal('qrModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Đóng</button>
+        </div>
+    </div>
+
+    <!-- MODAL DANH SÁCH LỜI NHẮN -->
+    <div id="messagesModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="text-base font-bold">Lời Nhắn Từ Khách Truy Cập</h3>
+                <button onclick="closeModal('messagesModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">✕</button>
+            </div>
+            <div id="messagesListContainer" class="py-4 overflow-y-auto space-y-3 flex-1">
+                <!-- Hiển thị danh sách lời nhắn -->
+            </div>
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+                <button onclick="closeModal('messagesModal')" class="px-5 py-2 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 text-xs font-semibold">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hộp thoại thông báo nổi (Toast) -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden items-center gap-3 bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-3 rounded-2xl shadow-xl text-xs font-medium">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span id="toastText">Thành công!</span>
+    </div>
+
+    <!-- JavaScript Xử Lý Toàn Bộ Ứng Dụng -->
+    <script>
+        let bioData = JSON.parse(JSON.stringify(window.INITIAL_BIO_DATA));
+        let isAdminLoggedIn = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLocalData();
+            renderProfile();
+            renderLinks();
+            updateMsgBadge();
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            // Tự động mở Admin nếu URL có ?admin=1
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === '1') {
+                openAdminLoginModal();
+            }
+
+            // Phím tắt Ctrl + Shift + E để mở đăng nhập Admin
+            window.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.shiftKey && e.code === 'KeyE') {
+                    e.preventDefault();
+                    openAdminLoginModal();
+                }
+            });
+        });
+
+        function loadLocalData() {
+            try {
+                const saved = localStorage.getItem('bio_app_data_v3');
+                if (saved) {
+                    bioData = JSON.parse(saved);
+                }
+            } catch(e) {}
+        }
+
+        function saveLocalData() {
+            try {
+                localStorage.setItem('bio_app_data_v3', JSON.stringify(bioData));
+            } catch(e) {}
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastText').textContent = msg;
+            t.classList.remove('hidden');
+            t.classList.add('flex');
+            setTimeout(() => {
+                t.classList.add('hidden');
+                t.classList.remove('flex');
+            }, 3000);
+        }
+
+        function renderProfile() {
+            const p = bioData.profile;
+            document.getElementById('displayName').textContent = p.name;
+            document.getElementById('displayRole').textContent = p.role;
+            document.getElementById('displayBio').textContent = p.bio;
+            document.getElementById('displayAvatar').src = p.avatar || 'https://placehold.co/300x300/4F46E5/FFFFFF?text=AVATAR';
+            document.getElementById('footerName').textContent = p.name;
+
+            const callBtn = document.getElementById('quickCallBtn');
+            if (callBtn) callBtn.href = `tel:${p.phone}`;
+        }
+
+        function renderLinks() {
+            const container = document.getElementById('linksContainer');
+            container.innerHTML = '';
+
+            bioData.links.forEach((link, index) => {
+                const a = document.createElement('a');
+                a.href = link.url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.className = 'group flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-brand-500/50 dark:hover:border-brand-500/50 transition-all transform hover:-translate-y-0.5';
+
+                let iconSvg = getIconSvg(link.icon);
+
+                a.innerHTML = `
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-brand-50 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                            ${iconSvg}
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-sm text-slate-900 dark:text-white">${escapeHTML(link.title)}</h3>
+                            ${link.subtitle ? `<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${escapeHTML(link.subtitle)}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        ${isAdminLoggedIn ? `
+                            <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl" onclick="event.preventDefault(); event.stopPropagation();">
+                                <button onclick="openEditLinkModal(${index})" class="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-lg text-slate-600 dark:text-slate-300" title="Sửa">✏️</button>
+                                <button onclick="deleteLink(${index})" class="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg text-red-600" title="Xóa">🗑️</button>
+                            </div>
+                        ` : ''}
+                        <svg class="w-5 h-5 text-slate-400 group-hover:translate-x-1 group-hover:text-brand-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </div>
+                `;
+                container.appendChild(a);
+            });
+        }
+
+        function getIconSvg(type) {
+            switch(type) {
+                case 'facebook': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>';
+                case 'message-circle': return '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>';
+                case 'video': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>';
+                case 'youtube': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>';
+                case 'instagram': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>';
+                case 'github': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>';
+                case 'send': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.14-.261.26-.536.26l.21-3.05 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.87 4.326-2.96-.924c-.64-.203-.654-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/></svg>';
+                case 'twitter': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>';
+                case 'linkedin': return '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>';
+                default: return '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>';
+            }
+        }
+
+        function copyPhone() {
+            const phone = bioData.profile.phone;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(phone).then(() => showToast('Đã sao chép số điện thoại!'));
+            } else {
+                const textArea = document.createElement("textarea");
+                textArea.value = phone;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Đã sao chép số điện thoại!');
+                } catch (err) {
+                    showToast('Không thể sao chép.');
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+
+        function openAdminLoginModal() { openModal('adminLoginModal'); }
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPasswordInput').value;
+            if (pass === '123456') {
+                isAdminLoggedIn = true;
+                closeModal('adminLoginModal');
+                document.getElementById('adminToolbar').classList.remove('hidden');
+                document.getElementById('addLinkBtnMobile').classList.remove('hidden');
+                renderLinks();
+                showToast('Đã đăng nhập quyền Quản trị viên thành công!');
+            } else {
+                showToast('Mật khẩu không chính xác (mặc định: 123456)');
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminToolbar').classList.add('hidden');
+            document.getElementById('addLinkBtnMobile').classList.add('hidden');
+            renderLinks();
+            showToast('Đã thoát chế độ Quản trị viên.');
+        }
+
+        function openEditProfileModal() {
+            const p = bioData.profile;
+            document.getElementById('inputName').value = p.name;
+            document.getElementById('inputRole').value = p.role;
+            document.getElementById('inputPhone').value = p.phone;
+            document.getElementById('inputEmail').value = p.email;
+            document.getElementById('inputBio').value = p.bio;
+            document.getElementById('inputAvatar').value = p.avatar;
+            openModal('editProfileModal');
+        }
+
+        function handleAvatarFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('inputAvatar').value = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleSaveProfile(e) {
+            e.preventDefault();
+            bioData.profile.name = document.getElementById('inputName').value.trim();
+            bioData.profile.role = document.getElementById('inputRole').value.trim();
+            bioData.profile.phone = document.getElementById('inputPhone').value.trim();
+            bioData.profile.email = document.getElementById('inputEmail').value.trim();
+            bioData.profile.bio = document.getElementById('inputBio').value.trim();
+            
+            const customAvatar = document.getElementById('inputAvatar').value.trim();
+            if (customAvatar) {
+                bioData.profile.avatar = customAvatar;
+            }
+
+            saveLocalData();
+            renderProfile();
+            closeModal('editProfileModal');
+            showToast('Đã cập nhật hồ sơ cá nhân thành công!');
+        }
+
+        function openAddLinkModal() {
+            document.getElementById('linkModalTitle').textContent = 'Thêm Liên Kết Mới';
+            document.getElementById('editLinkIndex').value = '-1';
+            document.getElementById('linkTitle').value = '';
+            document.getElementById('linkUrl').value = '';
+            document.getElementById('linkSubtitle').value = '';
+            document.getElementById('linkIcon').value = 'globe';
+            openModal('linkModal');
+        }
+
+        function openEditLinkModal(index) {
+            const link = bioData.links[index];
+            document.getElementById('linkModalTitle').textContent = 'Chỉnh Sửa Liên Kết';
+            document.getElementById('editLinkIndex').value = index;
+            document.getElementById('linkTitle').value = link.title;
+            document.getElementById('linkUrl').value = link.url;
+            document.getElementById('linkSubtitle').value = link.subtitle || '';
+            document.getElementById('linkIcon').value = link.icon;
+            openModal('linkModal');
+        }
+
+        function handleSaveLink(e) {
+            e.preventDefault();
+            const index = parseInt(document.getElementById('editLinkIndex').value);
+            const linkObj = {
+                title: document.getElementById('linkTitle').value.trim(),
+                url: document.getElementById('linkUrl').value.trim(),
+                subtitle: document.getElementById('linkSubtitle').value.trim(),
+                icon: document.getElementById('linkIcon').value
+            };
+
+            if (index === -1) {
+                bioData.links.push(linkObj);
+                showToast('Đã thêm liên kết mới.');
+            } else {
+                bioData.links[index] = linkObj;
+                showToast('Đã cập nhật liên kết.');
+            }
+
+            saveLocalData();
+            renderLinks();
+            closeModal('linkModal');
+        }
+
+        function deleteLink(index) {
+            bioData.links.splice(index, 1);
+            saveLocalData();
+            renderLinks();
+            showToast('Đã xóa liên kết.');
+        }
+
+        function openQRModal() {
+            const container = document.getElementById('qrcodeContainer');
+            container.innerHTML = '';
+            const currentUrl = window.location.href.split('#')[0];
+            new QRCode(container, {
+                text: currentUrl,
+                width: 180,
+                height: 180
+            });
+            document.getElementById('qrOwnerLabel').textContent = bioData.profile.name;
+            openModal('qrModal');
+        }
+
+        function handleSendMessage(e) {
+            e.preventDefault();
+            const msg = {
+                name: document.getElementById('msgName').value.trim(),
+                contact: document.getElementById('msgContact').value.trim(),
+                content: document.getElementById('msgContent').value.trim(),
+                time: new Date().toLocaleString('vi-VN')
+            };
+            if (!bioData.messages) bioData.messages = [];
+            bioData.messages.unshift(msg);
+            saveLocalData();
+            updateMsgBadge();
+            document.getElementById('contactForm').reset();
+            showToast('Đã gửi lời nhắn thành công!');
+        }
+
+        function updateMsgBadge() {
+            const count = (bioData.messages || []).length;
+            const badge = document.getElementById('msgCountBadge');
+            if (badge) badge.textContent = count;
+        }
+
+        function openMessagesModal() {
+            const container = document.getElementById('messagesListContainer');
+            const list = bioData.messages || [];
+            if (list.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">Chưa có lời nhắn nào.</p>';
+            } else {
+                container.innerHTML = list.map(m => `
+                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 text-xs space-y-1">
+                        <div class="flex justify-between font-semibold">
+                            <span>${escapeHTML(m.name)}</span>
+                            <span class="text-slate-400 text-[10px]">${escapeHTML(m.time)}</span>
+                        </div>
+                        <p class="text-brand-600 dark:text-brand-400">Liên hệ: ${escapeHTML(m.contact)}</p>
+                        <p class="text-slate-600 dark:text-slate-300 mt-1">${escapeHTML(m.content)}</p>
+                    </div>
+                `).join('');
+            }
+            openModal('messagesModal');
+        }
+
+        function escapeHTML(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function exportReadyHTML() {
+            const cloneData = JSON.parse(JSON.stringify(bioData));
+            cloneData.messages = [];
+
+            const scriptTag = document.getElementById('bioDataScript');
+            if (scriptTag) {
+                scriptTag.textContent = `window.INITIAL_BIO_DATA = ${JSON.stringify(cloneData, null, 4)};`;
+            }
+
+            isAdminLoggedIn = false;
+            document.getElementById('adminToolbar').classList.add('hidden');
+            document.getElementById('addLinkBtnMobile').classList.add('hidden');
+            renderLinks();
+
+            const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Đã xuất tệp index.html sạch sẽ để đăng lên GitHub!');
+        }
+    </script>
+</body>
+</html>Bio Cá Nhân</title>
     <!-- Tải Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Tải Google Fonts: Inter -->
