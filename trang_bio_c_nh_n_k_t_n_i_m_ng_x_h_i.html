@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Sơ Cá Nhân & Kết Nối | Link-in-Bio</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tải Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Thư viện tạo mã QR gọn nhẹ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            500: '#6366F1',
+                            600: '#4F46E5',
+                            700: '#4338CA',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 selection:bg-brand-600 selection:text-white relative overflow-x-hidden">
+
+    <!-- Họa tiết nền ánh sáng mềm mại -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[380px] rounded-full bg-gradient-to-tr from-indigo-500/15 via-sky-400/15 to-emerald-400/15 blur-3xl dark:from-indigo-500/20 dark:via-purple-500/15 dark:to-sky-500/10"></div>
+    </div>
+
+    <!-- Thanh công cụ nổi phía trên -->
+    <header class="sticky top-0 z-30 backdrop-blur-md bg-slate-50/80 dark:bg-slate-950/80 border-b border-slate-200/70 dark:border-slate-800/70">
+        <div class="max-w-xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
+            <!-- Nút bật/tắt chế độ Sáng/Tối -->
+            <button onclick="toggleTheme()" id="themeToggleBtn" title="Chuyển chế độ Sáng / Tối" class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition shadow-2xs">
+                <svg id="sunIcon" class="w-5 h-5 hidden dark:block text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <svg id="moonIcon" class="w-5 h-5 block dark:hidden text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+            </button>
+
+            <!-- Nhóm nút chức năng: Khách chỉ thấy Mã QR; Admin mới thấy công cụ quản trị -->
+            <div class="flex items-center gap-2">
+                <button onclick="openQRModal()" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5 shadow-2xs">
+                    <svg class="w-4 h-4 text-brand-600 dark:text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                    <span>Mã QR Danh Thiếp</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Thanh công cụ riêng cho ADMIN (Ẩn hoàn toàn với khách truy cập) -->
+    <div id="adminToolbar" class="hidden sticky top-16 z-20 bg-slate-900 text-white border-b border-slate-800 shadow-lg">
+        <div class="max-w-xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2 text-xs font-semibold text-emerald-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Chế Độ Quản Trị (Admin)</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-1.5">
+                <button onclick="toggleEditMode()" id="editModeBtn" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-100 flex items-center gap-1 transition">
+                    <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2.5 2.5 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    <span id="editModeBtnText">Chỉnh Sửa Bio</span>
+                </button>
+
+                <button onclick="openChangePasswordModal()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-100 flex items-center gap-1 transition">
+                    <svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                    <span>Đổi Mật Khẩu</span>
+                </button>
+
+                <button onclick="exportReadyHTML()" title="Xuất tệp index.html bản công khai để đăng lên GitHub Pages" class="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold flex items-center gap-1 transition shadow-xs">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    <span>Xuất Tệp index.html</span>
+                </button>
+
+                <button onclick="logoutAdmin()" title="Thoát chế độ Admin" class="px-2.5 py-1.5 rounded-lg bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white text-xs font-medium transition">
+                    Thoát
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Khung nội dung chính (Giao diện Bio chuẩn di động & máy tính) -->
+    <main class="max-w-xl mx-auto px-4 pt-8 pb-20 space-y-7">
+
+        <!-- Banner thông báo khi đang ở Chế độ Chỉnh sửa (Chỉ hiện với Admin) -->
+        <div id="editModeBanner" class="hidden rounded-2xl bg-amber-50 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-800 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="text-xs text-amber-900 dark:text-amber-200">
+                <strong class="block text-sm font-semibold">Đang bật chế độ chỉnh sửa nội dung</strong>
+                <span>Sau khi cập nhật hồ sơ hoặc liên kết mạng xã hội xong, hãy nhấn <b>"Xuất Tệp index.html"</b> trên thanh công cụ Admin để tải bản công khai mới về đăng lên GitHub Pages.</span>
+            </div>
+            <button onclick="toggleEditMode()" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shrink-0 transition">
+                Hoàn Tất Sửa
+            </button>
+        </div>
+
+        <!-- PHẦN 1: THẺ HỒ SƠ CÁ NHÂN (PROFILE CARD) -->
+        <section class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm text-center relative">
+            <!-- Nút sửa thông tin cá nhân (chỉ hiện khi bật Chế độ chỉnh sửa) -->
+            <button onclick="openEditProfileModal()" class="edit-only hidden absolute top-4 right-4 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-brand-50 dark:hover:bg-slate-700 text-xs font-medium text-brand-600 dark:text-brand-400 flex items-center gap-1 transition">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                <span>Sửa Hồ Sơ</span>
+            </button>
+
+            <!-- Ảnh đại diện -->
+            <div class="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-4">
+                <img id="displayAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" alt="Ảnh đại diện"
+                    onerror="this.onerror=null; this.src='https://placehold.co/300x300/4F46E5/FFFFFF?text=AVATAR';"
+                    class="w-full h-full object-cover rounded-full ring-4 ring-brand-500/20 dark:ring-brand-500/30 shadow-md">
+                <!-- Trạng thái hoạt động -->
+                <span title="Sẵn sàng kết nối" class="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-emerald-500 ring-4 ring-white dark:ring-slate-900"></span>
+            </div>
+
+            <!-- Tên & Dấu tích xác minh -->
+            <div class="flex items-center justify-center gap-1.5">
+                <h1 id="displayName" class="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                    Nguyễn Minh Tùng
+                </h1>
+                <svg class="w-5 h-5 text-sky-500 shrink-0" viewBox="0 0 20 20" fill="currentColor" title="Tài khoản chính thức">
+                    <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+
+            <!-- Chức danh / Nghề nghiệp -->
+            <p id="displayRole" class="text-sm font-medium text-brand-600 dark:text-brand-400 mt-1">
+                Nhà Sáng Tạo Nội Dung & Kinh Doanh Tự Do
+            </p>
+
+            <!-- Lời giới thiệu ngắn (Bio) -->
+            <p id="displayBio" class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mt-3 max-w-md mx-auto">
+                Chào mừng bạn ghé thăm trang cá nhân của mình! Kết nối với mình qua các nền tảng mạng xã hội bên dưới hoặc để lại lời nhắn để cùng hợp tác nhé.
+            </p>
+
+            <!-- Nút hành động liên hệ nhanh (Gọi điện, Nhắn Zalo, Sao chép Email/SĐT) -->
+        <!-- Chân trang gọn nhẹ (Khách chỉ thấy bản quyền & biểu tượng ổ khóa nhỏ mờ) -->
+        <footer class="text-center text-xs text-slate-500 dark:text-slate-400 pt-2 space-y-2">
+            <div class="flex items-center justify-center gap-2">
+                <p>© <span id="currentYear">2026</span> <span id="footerName">Nguyễn Minh Tùng</span>. Kết nối trực tuyến.</p>
+                <!-- Biểu tượng ổ khóa nhỏ mờ dành riêng cho Admin đăng nhập -->
+                <button onclick="openAdminLoginModal()" id="adminLockBtn" title="Đăng nhập Quản trị viên" aria-label="Đăng nhập Quản trị viên" class="p-1 rounded-lg text-slate-300 dark:text-slate-700 hover:text-slate-500 dark:hover:text-slate-400 transition opacity-60 hover:opacity-100">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                </button>
+            </div>
+
+            <!-- Các tùy chọn nâng cao chỉ hiển thị khi Admin đã đăng nhập -->
+            <div id="adminFooterLinks" class="hidden items-center justify-center gap-4 pt-1">
+                <button onclick="openDeployGuideModal()" class="text-brand-600 dark:text-brand-400 hover:underline font-medium">
+                    Hướng dẫn xuất bản lên GitHub Pages
+                </button>
+                <span>•</span>
+                <button onclick="resetDefaultData()" class="hover:text-rose-500 transition">
+                    Khôi phục dữ liệu gốc
+                </button>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- MODAL 0: ĐĂNG NHẬP QUẢN TRỊ VIÊN (ADMIN LOGIN) -->
+    <div id="adminLoginModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    </div>
+                    <h3 class="font-display text-base font-bold">Xác Thực Quản Trị Viên</h3>
+                </div>
+                <button onclick="closeModal('adminLoginModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <form id="adminLoginForm" class="mt-4 space-y-4">
+                <div>
+                    <label for="adminPasswordInput" class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">
+                        Nhập mật khẩu Admin để mở khóa chỉnh sửa:
+                    </label>
+                    <input type="password" id="adminPasswordInput" required placeholder="••••••" autocomplete="current-password"
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-brand-500/40">
+                    <p id="loginErrorMsg" class="hidden text-xs text-rose-500 mt-1.5 font-medium">Mật khẩu không chính xác, vui lòng thử lại.</p>
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeModal('adminLoginModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Hủy</button>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold shadow-xs">Mở Khóa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 0B: ĐỔI MẬT KHẨU ADMIN -->
+    <div id="changePasswordModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="font-display text-base font-bold">Đổi Mật Khẩu Admin</h3>
+                <button onclick="closeModal('changePasswordModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <form id="changePasswordForm" class="mt-4 space-y-4">
+                <div>
+                    <label class="block text-xs font-medium mb-1">Mật khẩu hiện tại</label>
+                    <input type="password" id="currentPassInput" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Mật khẩu mới (tối thiểu 4 ký tự)</label>
+                    <input type="password" id="newPassInput" minlength="4" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Nhập lại mật khẩu mới</label>
+                    <input type="password" id="confirmNewPassInput" minlength="4" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+                <p id="changePassError" class="hidden text-xs text-rose-500 font-medium"></p>
+
+                <div class="pt-1 flex gap-2">
+                    <button type="button" onclick="closeModal('changePasswordModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Hủy</button>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Lưu Mật Khẩu Mới</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 1: CHỈNH SỬA THÔNG TIN HỒ SƠ CÁ NHÂN -->
+    <div id="editProfileModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="font-display text-lg font-bold">Chỉnh Sửa Hồ Sơ Cá Nhân</h3>
+                <button onclick="closeModal('editProfileModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <form id="editProfileForm" class="mt-4 space-y-4">
+                <div>
+                    <label class="block text-xs font-medium mb-1">Họ và tên hiển thị</label>
+                    <input type="text" id="inputName" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Chức danh / Lĩnh vực hoạt động</label>
+                    <input type="text" id="inputRole" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Đường dẫn ảnh đại diện (URL ảnh)</label>
+                    <input type="url" id="inputAvatar" placeholder="https://..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium mb-1">Số điện thoại liên hệ</label>
+                        <input type="tel" id="inputPhone" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">Email cá nhân</label>
+                        <input type="email" id="inputEmail" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Giới thiệu ngắn về bản thân</label>
+                    <textarea id="inputBio" rows="3" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"></textarea>
+                </div>
+                <div class="pt-2 flex gap-2">
+                    <button type="button" onclick="closeModal('editProfileModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Hủy</button>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Lưu Thay Đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: THÊM / SỬA LIÊN KẾT MẠNG XÃ HỘI -->
+    <div id="linkModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 id="linkModalTitle" class="font-display text-lg font-bold">Thêm Liên Kết Mạng Xã Hội</h3>
+                <button onclick="closeModal('linkModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <form id="linkForm" class="mt-4 space-y-4">
+                <input type="hidden" id="editLinkIndex" value="-1">
+                <div>
+                    <label class="block text-xs font-medium mb-1">Nền tảng mạng xã hội</label>
+                    <select id="linkPlatform" onchange="autoFillLinkTitle()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                        <option value="facebook">Facebook</option>
+                        <option value="zalo">Zalo</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="github">GitHub</option>
+                        <option value="website">Website / Cửa hàng</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Tiêu đề hiển thị trên nút</label>
+                    <input type="text" id="linkTitle" required placeholder="Ví dụ: Facebook Cá Nhân" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Mô tả phụ (Tên tài khoản / @username)</label>
+                    <input type="text" id="linkSubtitle" placeholder="Ví dụ: @minhtung.official" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Đường dẫn liên kết (URL)</label>
+                    <input type="url" id="linkUrl" required placeholder="https://facebook.com/ten-cua-ban" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+
+                <div class="pt-2 flex gap-2">
+                    <button type="button" onclick="closeModal('linkModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Hủy</button>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Lưu Liên Kết</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: MÃ QR DANH THIẾP CÁ NHÂN -->
+    <div id="qrModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl text-center">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="font-display text-lg font-bold">Mã QR Danh Thiếp</h3>
+                <button onclick="closeModal('qrModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-3">Quét mã QR bằng camera điện thoại để lưu thông tin liên hệ (vCard) hoặc truy cập trang Bio này.</p>
+            <div class="my-5 p-4 bg-white rounded-2xl inline-flex items-center justify-center border border-slate-200 shadow-xs">
+                <div id="qrcodeContainer"></div>
+            </div>
+            <p id="qrOwnerLabel" class="font-display font-bold text-sm text-slate-900 dark:text-white"></p>
+            <button onclick="closeModal('qrModal')" class="mt-5 w-full py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-semibold">Đóng</button>
+        </div>
+    </div>
+
+    <!-- MODAL 4: HỘP THƯ LỜI NHẮN ĐÃ LƯU -->
+    <div id="messagesModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <div>
+                    <h3 class="font-display text-lg font-bold">Lời Nhắn Liên Hệ Đã Gửi</h3>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">Lưu trữ trực tiếp trên trình duyệt hiện tại</p>
+                </div>
+                <button onclick="closeModal('messagesModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="messagesListContainer" class="py-4 space-y-3 overflow-y-auto flex-1"></div>
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center">
+                <button onclick="clearMessages()" class="text-xs text-rose-500 hover:underline">Xóa tất cả lời nhắn</button>
+                <button onclick="closeModal('messagesModal')" class="px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-semibold">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: HƯỚNG DẪN ĐĂNG LÊN GITHUB PAGES MIỄN PHÍ -->
+    <div id="deployGuideModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="font-display text-lg font-bold">Đăng Trang Bio Lên GitHub Miễn Phí</h3>
+                <button onclick="closeModal('deployGuideModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="py-4 space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                <p><strong>Bước 1:</strong> Bật nút <b>"Chỉnh Sửa Bio"</b> trên thanh công cụ Admin để điền tên, ảnh đại diện và các link mạng xã hội của riêng bạn.</p>
+                <p><strong>Bước 2:</strong> Nhấn nút màu xanh <b>"Xuất Tệp index.html"</b> để tải tệp <code>index.html</code> (đã lưu cứng dữ liệu mới và tự động khóa chế độ khách) về máy.</p>
+                <p><strong>Bước 3:</strong> Tải tệp <code>index.html</code> này lên kho lưu trữ (Repository) trên GitHub và bật <b>Settings → Pages</b>.</p>
+                <p><strong>Lưu ý bảo mật:</strong> Khách truy cập link GitHub Pages sẽ <b>không</b> thấy nút chỉnh sửa hay nút tải web. Khi cần cập nhật nội dung, bạn chỉ việc bấm biểu tượng ổ khóa mờ ở cuối trang (hoặc nhấn <code>Ctrl + Shift + E</code>) và nhập mật khẩu Admin.</p>
+            </div>
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex gap-2">
+                <button onclick="exportReadyHTML()" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Xuất Tệp index.html Ngay</button>
+                <button onclick="closeModal('deployGuideModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Đã Hiểu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thông báo nổi (Toast) -->
+    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 hidden items-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-2.5 rounded-full shadow-xl text-xs font-medium">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 dark:bg-emerald-600"></span>
+        <span id="toastText">Đã sao chép!</span>
+    </div>
+
+    <!-- Dữ liệu mặc định & Mã xử lý toàn bộ tính năng -->
+    <script id="bioDataScript">
+        // Dữ liệu hồ sơ & mã băm mật khẩu Admin (mặc định: 123456)
+        window.INITIAL_BIO_DATA = {
+            adminHash: "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+            profile: {
+                name: "Nguyễn Minh Tùng",
+                role: "Nhà Sáng Tạo Nội Dung & Kinh Doanh Tự Do",
+                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+                phone: "0909888666",
+                email: "minhtung.contact@gmail.com",
+                bio: "Chào mừng bạn ghé thăm trang cá nhân của mình! Kết nối với mình qua các nền tảng mạng xã hội bên dưới hoặc để lại lời nhắn để cùng hợp tác nhé."
+            },
+            links: [
+                {
+                    platform: "facebook",
+                    title: "Facebook Cá Nhân",
+                    subtitle: "Kết bạn & theo dõi bài viết mới",
+                    url: "https://facebook.com"
+                },
+                {
+                    platform: "zalo",
+                    title: "Nhắn Tin Qua Zalo",
+                    subtitle: "Phản hồi nhanh công việc & tư vấn",
+                    url: "https://zalo.me/0909888666"
+                },
+                {
+                    platform: "tiktok",
+                    title: "Kênh TikTok Chính Thức",
+                    subtitle: "@minhtung.official • Video chia sẻ mỗi ngày",
+                    url: "https://tiktok.com"
+                },
+                {
+                    platform: "youtube",
+                    title: "Kênh YouTube",
+                    subtitle: "Đăng ký kênh để xem video dài chất lượng",
+                    url: "https://youtube.com"
+                },
+                {
+                    platform: "instagram",
+                    title: "Instagram",
+                    subtitle: "@minhtung.life • Khoảnh khắc đời thường",
+                    url: "https://instagram.com"
+                },
+                {
+                    platform: "telegram",
+                    title: "Kênh Telegram",
+                    subtitle: "Cập nhật thông tin nhanh chóng",
+                    url: "https://telegram.org"
+                },
+                {
+                    platform: "shopee",
+                    title: "Gian Hàng Shopee",
+                    subtitle: "Sản phẩm chính hãng & ưu đãi",
+                    url: "https://shopee.vn"
+                }
+            ]
+        };
+    </script>
+
+    <script>
+        const STORAGE_BIO_KEY = 'personal_bio_profile_v2';
+        const STORAGE_MSG_KEY = 'personal_bio_messages_v1';
+        const STORAGE_THEME_KEY = 'personal_bio_theme_v1';
+        const SESSION_ADMIN_KEY = 'personal_bio_admin_unlocked';
+        const DEFAULT_ADMIN_HASH = '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92'; // SHA-256 của "123456"
+
+        let appData = null;
+        let isAdminAuthenticated = false;
+        let isEditMode = false;
+
+        // Biểu tượng SVG sắc nét cho đa dạng mạng xã hội
+        const PLATFORM_CONFIG = {
+            facebook: {
+                bg: 'bg-blue-600 text-white',
+                svg: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>'
+            },
+            zalo: {
+                bg: 'bg-sky-500 text-white',
+                svg: '<span class="font-display font-extrabold text-xs tracking-tighter">Zalo</span>'
+            },
+            tiktok: {
+                bg: 'bg-slate-900 dark:bg-slate-800 text-white',
+                svg: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>'
+            },
+            youtube: {
+                bg: 'bg-red-600 text-white',
+                svg: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>'
+            },
+            instagram: {
+                bg: 'bg-gradient-to-tr from-amber-500 via-pink-600 to-purple-600 text-white',
+                svg: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>'
+            },
+            github: {
+                bg: 'bg-slate-800 text-white',
+                svg: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>'
+            },
+            telegram: {
+                bg: 'bg-sky-600 text-white',
+                svg: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.02-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.49.97-.75 3.82-1.66 6.37-2.76 7.66-3.3 3.65-1.54 4.41-1.81 4.9-1.81.11 0 .37.03.54.17.14.12.18.28.2.4-.02.07-.02.15-.04.23z"/></svg>'
+            },
+            twitter: {
+                bg: 'bg-black dark:bg-slate-800 text-white',
+                svg: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>'
+            },
+            linkedin: {
+                bg: 'bg-blue-700 text-white',
+                svg: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>'
+            },
+            shopee: {
+                bg: 'bg-orange-600 text-white',
+                svg: '<span class="font-display font-bold text-[11px]">Shopee</span>'
+            },
+            website: {
+                bg: 'bg-emerald-600 text-white',
+                svg: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>'
+            }
+        };
+
+        // Khởi tạo ứng dụng khi tải trang
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadBioData();
+            checkAdminSession();
+            renderAll();
+            updateMessageBadge();
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            // Hỗ trợ phím tắt Ctrl + Shift + E để mở hộp thoại đăng nhập Admin
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.shiftKey && (e.key === 'E' || e.key === 'e')) {
+                    e.preventDefault();
+                    if (!isAdminAuthenticated) {
+                        openAdminLoginModal();
+                    } else {
+                        toggleEditMode();
+                    }
+                }
+            });
+
+            // Hỗ trợ tham số URL ?admin=1 để mở nhanh ô đăng nhập
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('admin') === '1' && !isAdminAuthenticated) {
+                openAdminLoginModal();
+            }
+        });
+
+        // Hàm băm SHA-256 bảo mật mật khẩu trên trình duyệt
+        async function hashPassword(plainText) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(plainText);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Kiểm tra phiên đăng nhập Admin trong tab hiện tại
+        function checkAdminSession() {
+            isAdminAuthenticated = sessionStorage.getItem(SESSION_ADMIN_KEY) === 'true';
+            syncAdminUI();
+        }
+
+        // Cập nhật giao diện theo quyền Khách hoặc Admin
+        function syncAdminUI() {
+            const adminToolbar = document.getElementById('adminToolbar');
+            const adminFooterLinks = document.getElementById('adminFooterLinks');
+            const adminLockBtn = document.getElementById('adminLockBtn');
+
+            if (isAdminAuthenticated) {
+                adminToolbar.classList.remove('hidden');
+                adminFooterLinks.classList.remove('hidden');
+                adminFooterLinks.classList.add('flex');
+                adminLockBtn.classList.add('hidden');
+            } else {
+                isEditMode = false;
+                adminToolbar.classList.add('hidden');
+                adminFooterLinks.classList.add('hidden');
+                adminFooterLinks.classList.remove('flex');
+                adminLockBtn.classList.remove('hidden');
+            }
+            syncEditVisibility();
+        }
+
+        // Mở hộp thoại đăng nhập Admin
+        function openAdminLoginModal() {
+            if (isAdminAuthenticated) return;
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('loginErrorMsg').classList.add('hidden');
+            openModal('adminLoginModal');
+            setTimeout(() => document.getElementById('adminPasswordInput').focus(), 100);
+        }
+
+        // Xử lý xác thực mật khẩu Admin
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const rawPass = document.getElementById('adminPasswordInput').value;
+            const enteredHash = await hashPassword(rawPass);
+            const validHash = appData.adminHash || DEFAULT_ADMIN_HASH;
+
+            if (enteredHash === validHash) {
+                isAdminAuthenticated = true;
+                sessionStorage.setItem(SESSION_ADMIN_KEY, 'true');
+                closeModal('adminLoginModal');
+                syncAdminUI();
+                showToast('Đăng nhập Admin thành công!');
+            } else {
+                document.getElementById('loginErrorMsg').classList.remove('hidden');
+                document.getElementById('adminPasswordInput').select();
+            }
+        });
+
+        // Thoát chế độ Admin về lại giao diện Khách
+        function logoutAdmin() {
+            isAdminAuthenticated = false;
+            isEditMode = false;
+            sessionStorage.removeItem(SESSION_ADMIN_KEY);
+            syncAdminUI();
+            showToast('Đã thoát chế độ Admin.');
+        }
+
+        // Mở hộp thoại đổi mật khẩu Admin
+        function openChangePasswordModal() {
+            if (!isAdminAuthenticated) return;
+            document.getElementById('changePasswordForm').reset();
+            document.getElementById('changePassError').classList.add('hidden');
+            openModal('changePasswordModal');
+        }
+
+        document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const currentPass = document.getElementById('currentPassInput').value;
+            const newPass = document.getElementById('newPassInput').value;
+            const confirmPass = document.getElementById('confirmNewPassInput').value;
+            const errorEl = document.getElementById('changePassError');
+
+            const currentHash = await hashPassword(currentPass);
+            const validHash = appData.adminHash || DEFAULT_ADMIN_HASH;
+
+            if (currentHash !== validHash) {
+                errorEl.textContent = 'Mật khẩu hiện tại không đúng.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            if (newPass !== confirmPass) {
+                errorEl.textContent = 'Mật khẩu mới nhập lại không khớp.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            appData.adminHash = await hashPassword(newPass);
+            saveBioData();
+            closeModal('changePasswordModal');
+            showToast('Đã đổi mật khẩu Admin! Hãy xuất tệp index.html mới để lưu.');
+        });
+
+        // Quản lý giao diện Sáng / Tối
+        function initTheme() {
+            const savedTheme = localStorage.getItem(STORAGE_THEME_KEY);
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            localStorage.setItem(STORAGE_THEME_KEY, html.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        // Tải dữ liệu Bio từ localStorage hoặc dữ liệu nhúng sẵn trong file
+        function loadBioData() {
+            try {
+                const saved = localStorage.getItem(STORAGE_BIO_KEY);
+                appData = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(window.INITIAL_BIO_DATA));
+            } catch (e) {
+                appData = JSON.parse(JSON.stringify(window.INITIAL_BIO_DATA));
+    <!-- MODAL 2: THÊM / SỬA LIÊN KẾT MẠNG XÃ HỘI -->
+    <div id="linkModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <h3 id="linkModalTitle" class="font-display text-lg font-bold">Thêm Liên Kết Mạng Xã Hội</h3>
+                <button onclick="closeModal('linkModal')" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <form id="linkForm" class="mt-4 space-y-4">
+                <input type="hidden" id="editLinkIndex" value="-1">
+                <div>
+                    <label class="block text-xs font-medium mb-1">Nền tảng mạng xã hội</label>
+                    <select id="linkPlatform" onchange="autoFillLinkTitle()" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                        <option value="facebook">Facebook</option>
+                        <option value="zalo">Zalo</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="telegram">Telegram</option>
+                        <option value="twitter">X / Twitter</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="github">GitHub</option>
+                        <option value="shopee">Shopee / Sàn TMĐT</option>
+                        <option value="website">Website / Khác</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Tiêu đề hiển thị trên nút</label>
+                    <input type="text" id="linkTitle" required placeholder="Ví dụ: Facebook Cá Nhân" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Mô tả phụ (Tên tài khoản / @username)</label>
+                    <input type="text" id="linkSubtitle" placeholder="Ví dụ: @minhtung.official" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1">Đường dẫn liên kết (URL)</label>
+                    <input type="url" id="linkUrl" required placeholder="https://facebook.com/ten-cua-ban" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+
+                <div class="pt-2 flex gap-2">
+                    <button type="button" onclick="closeModal('linkModal')" class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold">Hủy</button>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Lưu Liên Kết</button>
+                </div>
+            </form>
+        </div>
+    </div>
+                            <div class="min-w-0 flex-1 text-left">
+                                <p class="font-display font-bold text-sm sm:text-base text-slate-900 dark:text-white truncate">${escapeHTML(item.title)}</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 truncate">${escapeHTML(item.subtitle || item.url)}</p>
+                            </div>
+                            <div class="text-slate-400 group-hover:text-brand-600 dark:group-hover:text-brand-400 group-hover:translate-x-0.5 transition pr-1">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </div>
+                        </a>
+
+                        <!-- Nút Sửa / Xóa chỉ hiện khi bật Chế độ chỉnh sửa -->
+                        <div class="edit-only hidden flex items-center gap-1 pr-3 border-l border-slate-200 dark:border-slate-800 pl-2">
+                            <button type="button" onclick="openEditLinkModal(${idx})" title="Sửa liên kết" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                            </button>
+                            <button type="button" onclick="deleteLink(${idx})" title="Xóa liên kết" class="p-2 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/50 text-rose-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Bật / Tắt chế độ chỉnh sửa trực tiếp (Chỉ dành cho Admin)
+        function toggleEditMode() {
+            if (!isAdminAuthenticated) {
+                openAdminLoginModal();
+                return;
+            }
+            isEditMode = !isEditMode;
+            syncEditVisibility();
+            showToast(isEditMode ? 'Đã bật chế độ chỉnh sửa' : 'Đã lưu thay đổi giao diện');
+        }
+
+        function syncEditVisibility() {
+            const banner = document.getElementById('editModeBanner');
+            const btnText = document.getElementById('editModeBtnText');
+            const editElements = document.querySelectorAll('.edit-only');
+
+            if (isAdminAuthenticated && isEditMode) {
+                banner.classList.remove('hidden');
+                if (btnText) btnText.textContent = 'Xong';
+                editElements.forEach(el => el.classList.remove('hidden'));
+            } else {
+                banner.classList.add('hidden');
+                if (btnText) btnText.textContent = 'Chỉnh Sửa Bio';
+                editElements.forEach(el => el.classList.add('hidden'));
+            }
+        }
+        // Xuất tệp index.html hoàn chỉnh bản Công khai (Đã khóa quyền Admin & ẩn toàn bộ công cụ sửa)
+        function exportReadyHTML() {
+            if (!isAdminAuthenticated) {
+                openAdminLoginModal();
+                return;
+            }
+
+            // Đóng toàn bộ modal và tạm đưa giao diện về trạng thái Khách trước khi xuất mã nguồn
+            ['adminLoginModal', 'changePasswordModal', 'editProfileModal', 'linkModal', 'qrModal', 'messagesModal', 'deployGuideModal'].forEach(closeModal);
+
+            const prevAdminState = isAdminAuthenticated;
+            const prevEditState = isEditMode;
+
+            isAdminAuthenticated = false;
+            isEditMode = false;
+            syncAdminUI();
+
+            // Lưu cứng dữ liệu mới nhất (bao gồm cả mật khẩu Admin mới nếu đã đổi) vào thẻ script khởi tạo
+            const dataScript = document.getElementById('bioDataScript');
+            dataScript.textContent = `\n        window.INITIAL_BIO_DATA = ${JSON.stringify(appData, null, 4)};\n    `;
+
+            // Xóa nội dung QR sinh động trước khi xuất để tránh trùng lặp khi mở lại
+            const qrContainer = document.getElementById('qrcodeContainer');
+            if (qrContainer) qrContainer.innerHTML = '';
+
+            const fullHTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            const blob = new Blob([fullHTML], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // Khôi phục lại phiên làm việc Admin trên trình duyệt hiện tại của bạn
+            isAdminAuthenticated = prevAdminState;
+            isEditMode = prevEditState;
+            syncAdminUI();
+
+            showToast('Đã xuất tệp index.html bản công khai an toàn!');
+        }
+
+        // Mở Modal sửa hồ sơ
+        function openEditProfileModal() {
+            const p = appData.profile;
+            document.getElementById('inputName').value = p.name;
+            document.getElementById('inputRole').value = p.role;
+            document.getElementById('inputAvatar').value = p.avatar;
+            document.getElementById('inputPhone').value = p.phone;
+            document.getElementById('inputEmail').value = p.email;
+            document.getElementById('inputBio').value = p.bio;
+            openModal('editProfileModal');
+        }
+
+        document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            appData.profile = {
+                name: document.getElementById('inputName').value.trim(),
+                role: document.getElementById('inputRole').value.trim(),
+                avatar: document.getElementById('inputAvatar').value.trim(),
+                phone: document.getElementById('inputPhone').value.trim(),
+                email: document.getElementById('inputEmail').value.trim(),
+                bio: document.getElementById('inputBio').value.trim()
+            };
+            saveBioData();
+            renderAll();
+            closeModal('editProfileModal');
+            showToast('Đã cập nhật thông tin hồ sơ!');
+        });
+
+        // Quản lý Thêm / Sửa / Xóa mạng xã hội
+        function openAddLinkModal() {
+            document.getElementById('linkModalTitle').textContent = 'Thêm Liên Kết Mạng Xã Hội';
+            document.getElementById('editLinkIndex').value = '-1';
+            document.getElementById('linkPlatform').value = 'facebook';
+            document.getElementById('linkTitle').value = 'Facebook Cá Nhân';
+            document.getElementById('linkSubtitle').value = '';
+            document.getElementById('linkUrl').value = '';
+            openModal('linkModal');
+        }
+
+        function openEditLinkModal(index) {
+            const item = appData.links[index];
+            document.getElementById('linkModalTitle').textContent = 'Chỉnh Sửa Liên Kết';
+            document.getElementById('editLinkIndex').value = index;
+            document.getElementById('linkPlatform').value = item.platform;
+            document.getElementById('linkTitle').value = item.title;
+            document.getElementById('linkSubtitle').value = item.subtitle;
+            document.getElementById('linkUrl').value = item.url;
+            openModal('linkModal');
+        }
+
+        function autoFillLinkTitle() {
+            const idx = parseInt(document.getElementById('editLinkIndex').value, 10);
+            if (idx !== -1) return;
+            const map = {
+                facebook: 'Facebook Cá Nhân',
+                zalo: 'Nhắn Tin Qua Zalo',
+                tiktok: 'Kênh TikTok',
+                youtube: 'Kênh YouTube',
+                instagram: 'Instagram',
+                telegram: 'Kênh Telegram',
+                twitter: 'X (Twitter)',
+                linkedin: 'LinkedIn',
+                github: 'GitHub',
+                shopee: 'Gian Hàng Shopee',
+                website: 'Website Cá Nhân'
+            };
+            const val = document.getElementById('linkPlatform').value;
+            document.getElementById('linkTitle').value = map[val] || '';
+        }
+
+        document.getElementById('linkForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const idx = parseInt(document.getElementById('editLinkIndex').value, 10);
+            const newLink = {
+                platform: document.getElementById('linkPlatform').value,
+                title: document.getElementById('linkTitle').value.trim(),
+                subtitle: document.getElementById('linkSubtitle').value.trim(),
+                url: document.getElementById('linkUrl').value.trim()
+            };
+
+            if (idx >= 0) {
+                appData.links[idx] = newLink;
+                showToast('Đã cập nhật liên kết!');
+            } else {
+                appData.links.push(newLink);
+                showToast('Đã thêm liên kết mới!');
+            }
+
+            saveBioData();
+            renderLinks();
+            syncEditVisibility();
+            closeModal('linkModal');
+        });
+
+        function deleteLink(index) {
+            appData.links.splice(index, 1);
+            saveBioData();
+            renderLinks();
+            syncEditVisibility();
+            showToast('Đã xóa liên kết.');
+        }
+
+        // Tạo mã QR danh thiếp vCard
+        function openQRModal() {
+            const p = appData.profile;
+            const qrContainer = document.getElementById('qrcodeContainer');
+            qrContainer.innerHTML = '';
+            document.getElementById('qrOwnerLabel').textContent = `${p.name} • ${p.phone}`;
+
+            // Chuỗi vCard chuẩn giúp điện thoại nhận diện lưu danh bạ ngay lập tức
+            const vCard = `BEGIN:VCARD\nVERSION:3.0\nFN:${p.name}\nTITLE:${p.role}\nTEL;TYPE=CELL:${p.phone}\nEMAIL:${p.email}\nEND:VCARD`;
+
+            new QRCode(qrContainer, {
+                text: vCard,
+                width: 180,
+                height: 180,
+                colorDark: "#0f172a",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            openModal('qrModal');
+        }
+
+        // Xử lý gửi lời nhắn liên hệ
+        document.getElementById('contactMessageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const msg = {
+                name: document.getElementById('senderName').value.trim(),
+                contact: document.getElementById('senderContact').value.trim(),
+                content: document.getElementById('senderContent').value.trim(),
+                time: new Date().toLocaleString('vi-VN')
+            };
+
+            const list = JSON.parse(localStorage.getItem(STORAGE_MSG_KEY) || '[]');
+            list.unshift(msg);
+            localStorage.setItem(STORAGE_MSG_KEY, JSON.stringify(list));
+
+            this.reset();
+            updateMessageBadge();
+            showToast('Đã gửi lời nhắn thành công! Cảm ơn bạn.');
+        });
+
+        function updateMessageBadge() {
+            const list = JSON.parse(localStorage.getItem(STORAGE_MSG_KEY) || '[]');
+            document.getElementById('msgCountBadge').textContent = list.length;
+        }
+
+        function openMessagesModal() {
+            const list = JSON.parse(localStorage.getItem(STORAGE_MSG_KEY) || '[]');
+            const container = document.getElementById('messagesListContainer');
+            if (list.length === 0) {
+                container.innerHTML = `<p class="text-center text-xs text-slate-500 py-8">Chưa có lời nhắn nào được gửi trên trình duyệt này.</p>`;
+            } else {
+                container.innerHTML = list.map(m => `
+                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-xs space-y-1">
+                        <div class="flex justify-between font-semibold text-slate-900 dark:text-white">
+                            <span>${escapeHTML(m.name)}</span>
+                            <span class="text-brand-600 dark:text-brand-400">${escapeHTML(m.contact)}</span>
+                        </div>
+                        <p class="text-slate-700 dark:text-slate-300 leading-relaxed">${escapeHTML(m.content)}</p>
+                        <p class="text-[10px] text-slate-400 pt-1">${escapeHTML(m.time)}</p>
+                    </div>
+                `).join('');
+            }
+            openModal('messagesModal');
+        }
+
+        function clearMessages() {
+            localStorage.removeItem(STORAGE_MSG_KEY);
+            updateMessageBadge();
+            openMessagesModal();
+            showToast('Đã xóa tất cả lời nhắn.');
+        }
+
+        // Xuất tệp index.html hoàn chỉnh đã nhúng sẵn dữ liệu người dùng vừa chỉnh sửa
+        function exportReadyHTML() {
+            // Tắt chế độ chỉnh sửa trước khi xuất file để khách truy cập thấy giao diện sạch đẹp
+            const wasEditing = isEditMode;
+            if (wasEditing) {
+                isEditMode = false;
+                syncEditVisibility();
+            }
+
+            // Cập nhật dữ liệu mới nhất vào thẻ script khởi tạo để khi đăng lên GitHub Pages mọi người đều thấy đúng thông tin của bạn
+            const dataScript = document.getElementById('bioDataScript');
+            dataScript.textContent = `\n        window.INITIAL_BIO_DATA = ${JSON.stringify(appData, null, 4)};\n    `;
+
+            // Xóa nội dung QR sinh động trước khi xuất để tránh trùng lặp khi mở lại
+            const qrContainer = document.getElementById('qrcodeContainer');
+            if (qrContainer) qrContainer.innerHTML = '';
+
+            const fullHTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            const blob = new Blob([fullHTML], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            if (wasEditing) {
+                isEditMode = true;
+                syncEditVisibility();
+            }
+            showToast('Đã tải xuống tệp index.html hoàn chỉnh!');
+        }
+
+        function resetDefaultData() {
+            localStorage.removeItem(STORAGE_BIO_KEY);
+            location.reload();
+        }
+
+        function openDeployGuideModal() {
+            openModal('deployGuideModal');
+        }
+
+        function openModal(id) {
+            const el = document.getElementById(id);
+            el.classList.remove('hidden');
+            el.classList.add('flex');
+        }
+
+        function closeModal(id) {
+            const el = document.getElementById(id);
+            el.classList.add('hidden');
+            el.classList.remove('flex');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastText').textContent = msg;
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 3000);
+        }
+
+        function escapeHTML(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+    </script>
+</body>
+</html>
