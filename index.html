@@ -649,7 +649,6 @@
             renderLinks();
             showToast('Đã xóa liên kết.');
         }
-        }
 
         function openQRModal() {
             document.getElementById('qrcodeContainer').innerHTML = '';
@@ -698,21 +697,6 @@
             updateMsgBadge();
             logoutAdmin();
             showToast('Đã khôi phục dữ liệu gốc.');
-        }
-        }
-
-        function openDeployGuideModal() { openModal('deployGuideModal'); }
-
-        function resetDefaultData() {
-            if (confirm('Khôi phục lại dữ liệu mặc định ban đầu?')) {
-                localStorage.removeItem('bio_app_data_v2');
-                bioData = JSON.parse(JSON.stringify(window.INITIAL_BIO_DATA));
-                renderProfile();
-                renderLinks();
-                updateMsgBadge();
-                logoutAdmin();
-                showToast('Đã khôi phục dữ liệu gốc.');
-            }
         }
 
         function exportReadyHTML() {
